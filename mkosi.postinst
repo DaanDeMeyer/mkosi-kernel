@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+if [ "${container:-}" != "mkosi" ]; then
+    exec mkosi-chroot "$SCRIPT" "$@"
+fi
+
+if command -v authselect >/dev/null; then
+    authselect select minimal
+fi

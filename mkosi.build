@@ -1,0 +1,56 @@
+#!/bin/sh
+set -e
+
+if [ "$container" != "mkosi" ]; then
+    exec mkosi-chroot "$SCRIPT" "$@"
+fi
+
+if [ -f "$SRCDIR/fstests/Makefile" ]; then
+    cd "$SRCDIR/fstests"
+    make -j "$(nproc)"
+fi
+
+if [ -f "$SRCDIR/btrfs-progs/autogen.sh" ]; then
+    cd "$SRCDIR/btrfs-progs"
+    if [ ! -f ./configure ]; then
+        ./autogen.sh
+        ./configure --disable-documentation --enable-experimental --bindir=/usr/bin --prefix=/usr --exec-prefix=/usr --disable-python
+    fi
+    make -j "$(nproc)"
+    make install
+fi
+
+if [ -f "$SRCDIR/kernel/Makefile" ]; then
+    cd "$SRCDIR/kernel"
+
+    if [ -z "$CONFIG" ]; then
+        if [ -f "$SRCDIR/kernel/.config" ]; then
+            CONFIG="$SRCDIR/kernel/.config"
+        else
+            CONFIG="$SRCDIR/mkosi.kernel.config"
+        fi
+    fi
+
+    make KCONFIG_ALLCONFIG="$CONFIG" O="$BUILDDIR" alldefconfig
+
+    # Ensure fast incremental builds by fixating these values which usually change for each build.
+    export KBUILD_BUILD_TIMESTAMP="Fri Jun  5 15:58:00 CEST 2015"
+    export KBUILD_BUILD_HOST="mkosi"
+
+    # Make sure systemd-boot boots this kernel and not the distro provided one by overriding the version.
+    make O="$BUILDDIR" VERSION=99 -j "$(nproc)"
+    make O="$BUILDDIR" VERSION=99 -j "$(nproc)" headers
+    make O="$BUILDDIR" VERSION=99 INSTALL_HDR_PATH="$DESTDIR/usr" headers_install
+
+    KERNEL_RELEASE=$(make O="$BUILDDIR" VERSION=99 -s kernelrelease)
+    mkdir -p "$DESTDIR/usr/lib/modules/$KERNEL_RELEASE"
+    make O="$BUILDDIR" VERSION=99 INSTALL_MOD_PATH="$DESTDIR/usr" modules_install
+    make O="$BUILDDIR" VERSION=99 INSTALL_PATH="$DESTDIR/usr/lib/modules/$KERNEL_RELEASE" install
+
+    if [ -n "$SELFTESTS" ]; then
+        mkdir -p "$DESTDIR/usr/lib/kernel/selftests"
+        make -C tools/testing/selftests -j "$(nproc)" O="$BUILDDIR" VERSION=99 KSFT_INSTALL_PATH="$DESTDIR/usr/lib/kernel/selftests" SKIP_TARGETS="$SELFTESTS_SKIP_TARGETS" install
+        mkdir -p "$DESTDIR/usr/bin"
+        ln -sf /usr/lib/kernel/selftests/bpf/bpftool "$DESTDIR/usr/bin/bpftool"
+    fi
+fi
