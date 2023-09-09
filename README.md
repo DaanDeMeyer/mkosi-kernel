@@ -20,9 +20,9 @@ BuildSources=<path-to-your-kernel-sources>:kernel
 
 Now run `mkosi -f qemu` again and a custom kernel will be built and booted
 instead of the default one. The kconfig file will be picked up from the kernel
-source tree at `.config`. If it does not exist and the `$CONFIG` environment
-variable (set using `Environment=`) is not set, the default config file shipped
-with this repository (`mkosi.kernel.config`) is used instead.
+source tree at `mkosi.kernel.config`. If it does not exist and the `$CONFIG`
+environment variable (set using `Environment=`) is not set, the default config
+file shipped with this repository (`mkosi.kernel.config`) is used instead.
 
 To build the selftests, set `SELFTESTS=1` using `Environment=`.
 `SELFTESTS_SKIP_TARGETS=` can be used to skip specific selftests targets, such
