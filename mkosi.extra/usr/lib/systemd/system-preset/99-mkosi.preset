@@ -1,0 +1,2 @@
+# Make sure that services are disabled by default (primarily for Debian/Ubuntu).
+disable *
