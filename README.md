@@ -4,7 +4,16 @@ This repository hosts mkosi configuration files intended for kernel development
 using mkosi. By default, a fedora rawhide cpio is built which is booted with
 qemu's direct kernel boot.
 
-To build the default image and boot it:
+To get started, write the distribution you want to build to mkosi.conf in the
+root of the repository in the Distribution section. Currently Fedora and Debian
+are supported. For example, for fedora, write the following:
+
+```conf
+[Distribution]
+Distribution=fedora
+```
+
+Then, to build the image and boot it, run the following:
 
 ```sh
 $ mkosi -f qemu
@@ -13,8 +22,7 @@ $ mkosi -f qemu
 To exit qemu, press `ctrl+a` followed by `c` to enter the qemu monitor, and then
 type `quit` to exit the VM.
 
-To build your own kernel create a file `mkosi.conf.d/local.conf` with the
-following contents:
+To build your own kernel, add the following to `mkosi.conf`:
 
 ```conf
 [Content]
@@ -37,5 +45,5 @@ on the fly. To use this configuration, the following tools have to be installed:
 - python 3.9 (Run mkosi with `$MKOSI_INTERPRETER` to point it at an alternative
   interpreter)
 - bubblewrap
-- dnf
+- package manager of the distribution you're building
 - coreutils
