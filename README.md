@@ -10,6 +10,9 @@ To build the default image and boot it:
 $ mkosi -f qemu
 ```
 
+To exit qemu, press `ctrl+a` followed by `c` to enter the qemu monitor, and then
+type `quit` to exit the VM.
+
 To build your own kernel create a file `mkosi.conf.d/local.conf` with the
 following contents:
 
