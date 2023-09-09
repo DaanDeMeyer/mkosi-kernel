@@ -28,9 +28,6 @@ To build the selftests, set `SELFTESTS=1` using `Environment=`.
 `SELFTESTS_SKIP_TARGETS=` can be used to skip specific selftests targets, such
 as bpf which can take a long time to rebuild.
 
-Set `LOCALVERSION` using `Environment=` to configure the local version that's
-passed to make.
-
 This configuration will download the required tools to build and boot the image
 on the fly. To use this configuration, the following tools have to be installed:
 

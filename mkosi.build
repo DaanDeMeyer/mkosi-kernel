@@ -36,11 +36,7 @@ if [ -f "$SRCDIR/kernel/Makefile" ]; then
         mount --bind /dev/null /sbin/installkernel
     fi
 
-    if [ -n "$LOCALVERSION" ]; then
-        LOCALVERSION="LOCALVERSION=$LOCALVERSION";
-    fi
-
-    EXTRA="O=\"$BUILDDIR\" VERSION=99 $LOCALVERSION"
+    EXTRA="O=\"$BUILDDIR\" VERSION=99"
 
     make KCONFIG_ALLCONFIG="$CONFIG" O="$BUILDDIR" alldefconfig
 
