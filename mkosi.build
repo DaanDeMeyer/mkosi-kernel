@@ -31,6 +31,11 @@ if [ -f "$SRCDIR/kernel/Makefile" ]; then
         fi
     fi
 
+    # Prevent a distro's custom installkernel script from being used.
+    if [ -x /sbin/installkernel ]; then
+        mount --bind /dev/null /sbin/installkernel
+    fi
+
     make KCONFIG_ALLCONFIG="$CONFIG" O="$BUILDDIR" alldefconfig
 
     # Ensure fast incremental builds by fixating these values which usually change for each build.
