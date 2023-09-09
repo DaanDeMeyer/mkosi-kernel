@@ -24,7 +24,7 @@ if [ -f "$SRCDIR/kernel/Makefile" ]; then
     cd "$SRCDIR/kernel"
 
     if [ -z "$CONFIG" ]; then
-        if [ -f "$SRCDIR/kernel/.config" ]; then
+        if [ -f "$SRCDIR/kernel/mkosi.kernel.config" ]; then
             CONFIG="$SRCDIR/kernel/.config"
         else
             CONFIG="$SRCDIR/mkosi.kernel.config"
