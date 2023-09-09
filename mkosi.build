@@ -23,12 +23,8 @@ fi
 if [ -f "$SRCDIR/kernel/Makefile" ]; then
     cd "$SRCDIR/kernel"
 
-    if [ -z "$CONFIG" ]; then
-        if [ -f "$SRCDIR/kernel/mkosi.kernel.config" ]; then
-            CONFIG="$SRCDIR/kernel/mkosi.kernel.config"
-        else
-            CONFIG="$SRCDIR/mkosi.kernel.config"
-        fi
+    if [ -z "$CONFIG" ] && [ -f "$SRCDIR/kernel/mkosi.kernel.config" ]; then
+        CONFIG="$SRCDIR/kernel/mkosi.kernel.config"
     fi
 
     # Prevent a distro's custom installkernel script from being used.
@@ -38,7 +34,7 @@ if [ -f "$SRCDIR/kernel/Makefile" ]; then
 
     EXTRA="O=\"$BUILDDIR\" VERSION=99"
 
-    make KCONFIG_ALLCONFIG="$CONFIG" O="$BUILDDIR" alldefconfig
+    scripts/kconfig/merge_config.sh -O "$BUILDDIR" $SRCDIR/$CONFIG $SRCDIR/mkosi.kernel.config
 
     # Ensure fast incremental builds by fixating these values which usually change for each build.
     export KBUILD_BUILD_TIMESTAMP="Fri Jun  5 15:58:00 CEST 2015"
