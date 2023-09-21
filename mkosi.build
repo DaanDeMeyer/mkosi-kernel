@@ -12,7 +12,10 @@ fi
 
 if [ -f "$SRCDIR/ltp/Makefile" ]; then
     cd "$SRCDIR/ltp"
-    ./build.sh
+    make -j "$(nproc)" autotools
+    ./configure
+    make -j "$(nproc)"
+    make install
 fi
 
 if [ -f "$SRCDIR/btrfs-progs/autogen.sh" ]; then
