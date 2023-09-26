@@ -34,6 +34,8 @@ instead of the default one. The kconfig file will be picked up from the kernel
 source tree at `mkosi.kernel.config`. If it does not exist and the `$CONFIG`
 environment variable (set using `Environment=`) is not set, the default config
 file shipped with this repository (`mkosi.kernel.config`) is used instead.
+Alternatively, `--config` (or `-c`) can be used to pass the config path to use
+via the command line (e.g. `mkosi -f build -c <path-to-config>`).
 
 To build the selftests, set `SELFTESTS=1` using `Environment=`.
 `SELFTESTS_SKIP_TARGETS=` can be used to skip specific selftests targets, such
