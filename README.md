@@ -54,3 +54,4 @@ on the fly. To use this configuration, the following tools have to be installed:
 - bubblewrap
 - package manager of the distribution you're building
 - coreutils
+- util-linux
