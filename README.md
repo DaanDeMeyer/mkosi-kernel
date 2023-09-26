@@ -41,6 +41,11 @@ To build the selftests, set `SELFTESTS=1` using `Environment=`.
 `SELFTESTS_SKIP_TARGETS=` can be used to skip specific selftests targets, such
 as bpf which can take a long time to rebuild.
 
+For each kernel, the out-of-tree build subdirectory used is synthesized from
+the localversion files in the given kernel source tree, the
+`CONFIG_LOCALVERSION` setting in the configuration and the `$LOCALVERSION`
+environment variable.
+
 This configuration will download the required tools to build and boot the image
 on the fly. To use this configuration, the following tools have to be installed:
 

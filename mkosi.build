@@ -69,6 +69,33 @@ if [ -f "$SRCDIR/kernel/Makefile" ]; then
         fi
     fi
 
+    echo "Using kernel config $CONFIG"
+
+    collect_files()
+    {
+        local file res=
+
+        for file; do
+            case "$file" in
+            *\~*)
+                continue
+                ;;
+            esac
+            if test -e "$file"; then
+                res="$res$(cat "$file")"
+            fi
+        done
+        echo "$res"
+    }
+
+    FILE_LOCALVERSION="$(collect_files localversion*)"
+    CONFIG_LOCALVERSION=$(sed -n 's/^CONFIG_LOCALVERSION=\(.*\)$/\1/p' "$SRCDIR/$CONFIG")
+
+    BUILDDIR="$BUILDDIR/${FILE_LOCALVERSION}${CONFIG_LOCALVERSION}${LOCALVERSION}"
+
+    echo "Using build directory $BUILDDIR"
+    mkdir -p "$BUILDDIR"
+
     # Prevent a distro's custom installkernel script from being used.
     if [ -x /sbin/installkernel ]; then
         mount --bind /dev/null /sbin/installkernel
