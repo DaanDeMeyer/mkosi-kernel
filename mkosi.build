@@ -120,9 +120,21 @@ if [ -f "$SRCDIR/kernel/Makefile" ]; then
     make $EXTRA INSTALL_PATH="$DESTDIR/usr/lib/modules/$KERNEL_RELEASE" install
 
     if [ -n "$SELFTESTS" ]; then
-        $SU make -C tools/testing/selftests -j "$(nproc)" $EXTRA KSFT_INSTALL_PATH="$DESTDIR/usr/lib/kernel/selftests" SKIP_TARGETS="$SELFTESTS_SKIP_TARGETS"
+        if [ -n "$SELFTESTS_TARGETS" ]; then
+            SELFTESTS_TARGETS="TARGETS=$SELFTESTS_TARGETS"
+        else
+            SELFTESTS_TARGETS=""
+        fi
+
+        if [ -n "$SELFTESTS_SKIP_TARGETS" ]; then
+            SELFTESTS_SKIP_TARGETS="SKIP_TARGETS=$SELFTESTS_SKIP_TARGETS"
+        else
+            SELFTESTS_SKIP_TARGETS=""
+        fi
+
+        $SU make -C tools/testing/selftests -j "$(nproc)" $EXTRA KSFT_INSTALL_PATH="$DESTDIR/usr/lib/kernel/selftests" $SELFTESTS_TARGETS $SELFTESTS_SKIP_TARGETS
         mkdir -p "$DESTDIR/usr/lib/kernel/selftests"
-        make -C tools/testing/selftests -j "$(nproc)" $EXTRA KSFT_INSTALL_PATH="$DESTDIR/usr/lib/kernel/selftests" SKIP_TARGETS="$SELFTESTS_SKIP_TARGETS" install
+        make -C tools/testing/selftests -j "$(nproc)" $EXTRA KSFT_INSTALL_PATH="$DESTDIR/usr/lib/kernel/selftests" $SELFTESTS_TARGETS $SELFTESTS_SKIP_TARGETS install
         mkdir -p "$DESTDIR/usr/bin"
         ln -sf /usr/lib/kernel/selftests/bpf/bpftool "$DESTDIR/usr/bin/bpftool"
     fi

@@ -38,6 +38,7 @@ Alternatively, `--config` (or `-c`) can be used to pass the config path to use
 via the command line (e.g. `mkosi -f build -c <path-to-config>`).
 
 To build the selftests, set `SELFTESTS=1` using `Environment=`.
+`SELFTESTS_TARGETS=` can be used to only build specific selftests targets.
 `SELFTESTS_SKIP_TARGETS=` can be used to skip specific selftests targets, such
 as bpf which can take a long time to rebuild.
 
