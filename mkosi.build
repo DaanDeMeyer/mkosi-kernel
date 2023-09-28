@@ -45,7 +45,7 @@ if [ -f "$SRCDIR/ltp/Makefile" ]; then
     $SU make -j "$(nproc)" autotools
     $SU ./configure
     $SU make -j "$(nproc)"
-    $SU make install
+    make install
 fi
 
 if [ -f "$SRCDIR/btrfs-progs/autogen.sh" ]; then
@@ -55,7 +55,7 @@ if [ -f "$SRCDIR/btrfs-progs/autogen.sh" ]; then
         $SU ./configure --disable-documentation --enable-experimental --bindir=/usr/bin --prefix=/usr --exec-prefix=/usr --disable-python
     fi
     $SU make -j "$(nproc)"
-    $SU make install
+    make install
 fi
 
 if [ -f "$SRCDIR/kernel/Makefile" ]; then
