@@ -91,10 +91,10 @@ if [ -f "$SRCDIR/kernel/Makefile" ]; then
     FILE_LOCALVERSION="$(collect_files localversion*)"
     CONFIG_LOCALVERSION=$(sed -n 's/^CONFIG_LOCALVERSION=\(.*\)$/\1/p' "$SRCDIR/$CONFIG")
 
-    BUILDDIR="$BUILDDIR/${FILE_LOCALVERSION}${CONFIG_LOCALVERSION}${LOCALVERSION}"
+    BUILDDIR="$BUILDDIR/kernel/${FILE_LOCALVERSION}${CONFIG_LOCALVERSION}${LOCALVERSION}"
 
-    echo "Using build directory $BUILDDIR"
-    mkdir -p "$BUILDDIR"
+    echo "Using kernel build directory $BUILDDIR"
+    $SU mkdir -p "$BUILDDIR"
 
     # Prevent a distro's custom installkernel script from being used.
     if [ -x /sbin/installkernel ]; then
