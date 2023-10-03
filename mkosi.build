@@ -58,6 +58,13 @@ if [ -f "$SRCDIR/btrfs-progs/autogen.sh" ]; then
     make install
 fi
 
+if [ -f "$SRCDIR/bpfilter/CMakeLists.txt" ]; then
+        cd "$SRCDIR/bpfilter"
+        $SU cmake -B "$BUILDDIR/bpfilter"
+        $SU cmake --build "$BUILDDIR/bpfilter"
+        cmake --install "$BUILDDIR/bpfilter" --prefix /usr
+fi
+
 if [ -f "$SRCDIR/kernel/Makefile" ]; then
     cd "$SRCDIR/kernel"
 
