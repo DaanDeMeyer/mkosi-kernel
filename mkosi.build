@@ -146,7 +146,7 @@ if [ -f "$SRCDIR/kernel/Makefile" ]; then
         ln -sf /usr/lib/kernel/selftests/bpf/bpftool "$DESTDIR/usr/bin/bpftool"
     fi
 
-    if [ -d tools/sched_ext ]; then
+    if [ -f tools/sched_ext/Makefile ]; then
         make -C tools/sched_ext -j "$(nproc)" $EXTRA
     fi
 fi
