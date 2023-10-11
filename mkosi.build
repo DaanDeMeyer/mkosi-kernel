@@ -109,9 +109,9 @@ if [ -f "$SRCDIR/kernel/Makefile" ]; then
     fi
 
     # Make sure systemd-boot boots this kernel and not the distro provided one by overriding the version.
-    EXTRA="O=\"$BUILDDIR\" VERSION=99"
+    EXTRA="O=$BUILDDIR VERSION=99"
 
-    $SU make KCONFIG_ALLCONFIG="$SRCDIR/$CONFIG" O="$BUILDDIR" alldefconfig
+    $SU make KCONFIG_ALLCONFIG="$SRCDIR/$CONFIG" O=$BUILDDIR alldefconfig
 
     # Ensure fast incremental builds by fixating these values which usually change for each build.
     export KBUILD_BUILD_TIMESTAMP="Fri Jun  5 15:58:00 CEST 2015"
@@ -144,5 +144,9 @@ if [ -f "$SRCDIR/kernel/Makefile" ]; then
         make -C tools/testing/selftests -j "$(nproc)" $EXTRA KSFT_INSTALL_PATH="$DESTDIR/usr/lib/kernel/selftests" $SELFTESTS_TARGETS $SELFTESTS_SKIP_TARGETS install
         mkdir -p "$DESTDIR/usr/bin"
         ln -sf /usr/lib/kernel/selftests/bpf/bpftool "$DESTDIR/usr/bin/bpftool"
+    fi
+
+    if [ -d tools/sched_ext ]; then
+        make -C tools/sched_ext -j "$(nproc)" $EXTRA
     fi
 fi
