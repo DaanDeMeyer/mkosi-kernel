@@ -37,32 +37,37 @@ SU="setpriv --reuid=${MKOSI_UID:-0} --regid=${MKOSI_GID:-0} --clear-groups"
 
 if [ -f "$SRCDIR/fstests/Makefile" ]; then
     cd "$SRCDIR/fstests"
+    $SU make clean
     $SU make -j "$(nproc)"
+    cd "$SRCDIR"
 fi
 
 if [ -f "$SRCDIR/ltp/Makefile" ]; then
-    cd "$SRCDIR/ltp"
+    cp --archive --update --reflink=auto "$SRCDIR/ltp" "$BUILDDIR"
+    cd "$BUILDDIR/ltp"
     $SU make -j "$(nproc)" autotools
     $SU ./configure
     $SU make -j "$(nproc)"
     make install
+    cd "$SRCDIR"
 fi
 
 if [ -f "$SRCDIR/btrfs-progs/autogen.sh" ]; then
-    cd "$SRCDIR/btrfs-progs"
+    cp --archive --update --reflink=auto "$SRCDIR/btrfs-progs" "$BUILDDIR"
+    cd "$BUILDDIR/btrfs-progs"
     if [ ! -f ./configure ]; then
         $SU ./autogen.sh
         $SU ./configure --disable-documentation --enable-experimental --bindir=/usr/bin --prefix=/usr --exec-prefix=/usr --disable-python
     fi
     $SU make -j "$(nproc)"
     make install
+    cd "$SRCDIR"
 fi
 
 if [ -f "$SRCDIR/bpfilter/CMakeLists.txt" ]; then
-        cd "$SRCDIR/bpfilter"
-        $SU cmake -B "$BUILDDIR/bpfilter"
-        $SU cmake --build "$BUILDDIR/bpfilter"
-        cmake --install "$BUILDDIR/bpfilter" --prefix /usr
+    $SU cmake -S "$SRCDIR/bpfilter" -B "$BUILDDIR/bpfilter"
+    $SU cmake --build "$BUILDDIR/bpfilter"
+    cmake --install "$BUILDDIR/bpfilter" --prefix /usr
 fi
 
 if [ -f "$SRCDIR/kernel/Makefile" ]; then
