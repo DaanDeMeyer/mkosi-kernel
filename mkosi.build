@@ -35,6 +35,14 @@ done
 # Run commands as the user running mkosi.
 SU="setpriv --reuid=${MKOSI_UID:-0} --regid=${MKOSI_GID:-0} --clear-groups"
 
+if [ -f "$SRCDIR/blktests/Makefile" ]; then
+    cp --archive --update --reflink=auto "$SRCDIR/blktests" "$BUILDDIR"
+    cd "$BUILDDIR/blktests"
+    $SU make -j "$(nproc)"
+    make install
+    cd "$SRCDIR"
+fi
+
 if [ -f "$SRCDIR/fstests/Makefile" ]; then
     cd "$SRCDIR/fstests"
     $SU make clean
