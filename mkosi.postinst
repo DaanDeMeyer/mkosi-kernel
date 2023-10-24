@@ -1,10 +1,8 @@
 #!/bin/sh
 set -e
 
-if [ "${container:-}" != "mkosi" ]; then
-    exec mkosi-chroot "$SCRIPT" "$@"
-fi
+useradd --root "$BUILDROOT" --create-home --user-group fsgqa
+useradd --root "$BUILDROOT" --create-home --user-group fsgqa2
+useradd --root "$BUILDROOT" --create-home --user-group 123456-fsgqa2
 
-if command -v authselect >/dev/null; then
-    authselect select minimal
-fi
+mkosi-chroot sh -c "command -v authselect >/dev/null && authselect select minimal || true"
