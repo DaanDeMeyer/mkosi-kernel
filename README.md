@@ -47,11 +47,13 @@ the localversion files in the given kernel source tree, the
 `CONFIG_LOCALVERSION` setting in the configuration and the `$LOCALVERSION`
 environment variable.
 
+## Requirements
+
 This configuration will download the required tools to build and boot the image
 on the fly. To use this configuration, the following tools have to be installed:
 
-- python 3.9 (Run mkosi with `$MKOSI_INTERPRETER` to point it at an alternative
-  interpreter)
+- mkosi v18
+- python 3.9 (Set `$MKOSI_INTERPRETER` to point to an alternative interpreter)
 - bubblewrap
 - package manager of the distribution you're building
 - coreutils
