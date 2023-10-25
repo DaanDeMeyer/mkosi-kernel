@@ -5,8 +5,8 @@ using mkosi. By default, a fedora rawhide image is built which is booted with
 qemu's direct kernel boot and VirtioFS.
 
 To get started, write the distribution you want to build to mkosi.conf in the
-root of the repository in the Distribution section. Currently Fedora and Debian
-are supported. For example, for fedora, write the following:
+root of the repository in the Distribution section. Currently CentOS, Fedora and
+Debian are supported. For example, for fedora, write the following:
 
 ```conf
 [Distribution]
