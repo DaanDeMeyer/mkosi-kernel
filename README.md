@@ -1,8 +1,8 @@
 # mkosi-kernel
 
 This repository hosts mkosi configuration files intended for kernel development
-using mkosi. By default, a fedora rawhide cpio is built which is booted with
-qemu's direct kernel boot.
+using mkosi. By default, a fedora rawhide image is built which is booted with
+qemu's direct kernel boot and VirtioFS.
 
 To get started, write the distribution you want to build to mkosi.conf in the
 root of the repository in the Distribution section. Currently Fedora and Debian
