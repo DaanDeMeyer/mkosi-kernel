@@ -129,6 +129,7 @@ if [ -f "$SRCDIR/kernel/Makefile" ]; then
     # Ensure fast incremental builds by fixating these values which usually change for each build.
     export KBUILD_BUILD_TIMESTAMP="Fri Jun  5 15:58:00 CEST 2015"
     export KBUILD_BUILD_HOST="mkosi"
+    export KBUILD_BUILD_USER="mkosi"
 
     $SU make $EXTRA -j "$(nproc)"
     $SU make $EXTRA -j "$(nproc)" headers
