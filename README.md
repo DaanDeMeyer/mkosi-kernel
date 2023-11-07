@@ -29,6 +29,13 @@ To build your own kernel, add the following to `mkosi.conf`:
 BuildSources=<path-to-your-kernel-sources>:kernel
 ```
 
+If you want to mount a directory into the qemu VM, you can add the following:
+
+```conf
+[Host]
+RuntimeTrees=<path-to-sources>:/path/in/guest
+```
+
 Now run `mkosi -f qemu` again and a custom kernel will be built and booted
 instead of the default one. The kconfig file will be picked up from the kernel
 source tree at `mkosi.kernel.config`. If it does not exist and the `$CONFIG`
