@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+if [ ! -f fstests/Makefile ]; then
+    exit 0
+fi
+
+cd fstests/
+cp "$SRCDIR/mkosi.fstests.config" local.config
+mkdir -p "$DESTDIR/mnt/test"
+mkdir -p "$DESTDIR/mnt/scratch"
+make clean
+make -j "$(nproc)"
