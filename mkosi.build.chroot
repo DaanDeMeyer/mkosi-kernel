@@ -1,10 +1,6 @@
 #!/bin/bash
 set -e
 
-if [ "$container" != "mkosi" ]; then
-    exec mkosi-chroot "$SCRIPT" "$@"
-fi
-
 TEMP=$(getopt -o 'c:' --long 'config:' -n 'mkosi.build' -- "$@")
 if [ $? -ne 0 ]; then
         echo 'Terminating...' >&2
@@ -32,30 +28,27 @@ while true; do
     esac
 done
 
-# Run commands as the user running mkosi.
-SU="setpriv --reuid=${MKOSI_UID:-0} --regid=${MKOSI_GID:-0} --clear-groups"
-
 if [ -f "$SRCDIR/blktests/Makefile" ]; then
     cp --archive --update --reflink=auto "$SRCDIR/blktests" "$BUILDDIR"
     cd "$BUILDDIR/blktests"
-    $SU make -j "$(nproc)"
+    make -j "$(nproc)"
     make install
     cd "$SRCDIR"
 fi
 
 if [ -f "$SRCDIR/fstests/Makefile" ]; then
     cd "$SRCDIR/fstests"
-    $SU make clean
-    $SU make -j "$(nproc)"
+    make clean
+    make -j "$(nproc)"
     cd "$SRCDIR"
 fi
 
 if [ -f "$SRCDIR/ltp/Makefile" ]; then
     cp --archive --update --reflink=auto "$SRCDIR/ltp" "$BUILDDIR"
     cd "$BUILDDIR/ltp"
-    $SU make -j "$(nproc)" autotools
-    $SU ./configure
-    $SU make -j "$(nproc)"
+    make -j "$(nproc)" autotools
+    ./configure
+    make -j "$(nproc)"
     make install
     cd "$SRCDIR"
 fi
@@ -64,17 +57,17 @@ if [ -f "$SRCDIR/btrfs-progs/autogen.sh" ]; then
     cp --archive --update --reflink=auto "$SRCDIR/btrfs-progs" "$BUILDDIR"
     cd "$BUILDDIR/btrfs-progs"
     if [ ! -f ./configure ]; then
-        $SU ./autogen.sh
-        $SU ./configure --disable-documentation --enable-experimental --bindir=/usr/bin --prefix=/usr --exec-prefix=/usr --disable-python
+        ./autogen.sh
+        ./configure --disable-documentation --enable-experimental --bindir=/usr/bin --prefix=/usr --exec-prefix=/usr --disable-python
     fi
-    $SU make -j "$(nproc)"
+    make -j "$(nproc)"
     make install
     cd "$SRCDIR"
 fi
 
 if [ -f "$SRCDIR/bpfilter/CMakeLists.txt" ]; then
-    $SU cmake -S "$SRCDIR/bpfilter" -B "$BUILDDIR/bpfilter"
-    $SU cmake --build "$BUILDDIR/bpfilter"
+    cmake -S "$SRCDIR/bpfilter" -B "$BUILDDIR/bpfilter"
+    cmake --build "$BUILDDIR/bpfilter"
     cmake --install "$BUILDDIR/bpfilter" --prefix /usr
 fi
 
@@ -114,7 +107,7 @@ if [ -f "$SRCDIR/kernel/Makefile" ]; then
     BUILDDIR="$BUILDDIR/kernel/${FILE_LOCALVERSION}${CONFIG_LOCALVERSION}${LOCALVERSION}"
 
     echo "Using kernel build directory $BUILDDIR"
-    $SU mkdir -p "$BUILDDIR"
+    mkdir -p "$BUILDDIR"
 
     # Prevent a distro's custom installkernel script from being used.
     if [ -x /sbin/installkernel ]; then
@@ -124,18 +117,18 @@ if [ -f "$SRCDIR/kernel/Makefile" ]; then
     # Make sure systemd-boot boots this kernel and not the distro provided one by overriding the version.
     EXTRA="O=$BUILDDIR VERSION=99 CARGO_HOME=/usr/share/cargo CARGO_OFFLINE=1"
 
-    $SU make KCONFIG_ALLCONFIG="$SRCDIR/$CONFIG" O=$BUILDDIR alldefconfig
+    make KCONFIG_ALLCONFIG="$SRCDIR/$CONFIG" O=$BUILDDIR alldefconfig
 
     # Ensure fast incremental builds by fixating these values which usually change for each build.
     export KBUILD_BUILD_TIMESTAMP="Fri Jun  5 15:58:00 CEST 2015"
     export KBUILD_BUILD_HOST="mkosi"
     export KBUILD_BUILD_USER="mkosi"
 
-    $SU make $EXTRA -j "$(nproc)"
-    $SU make $EXTRA -j "$(nproc)" headers
+    make $EXTRA -j "$(nproc)"
+    make $EXTRA -j "$(nproc)" headers
     make $EXTRA INSTALL_HDR_PATH="$DESTDIR/usr" headers_install
 
-    KERNEL_RELEASE=$($SU make $EXTRA -s kernelrelease)
+    KERNEL_RELEASE=$(make $EXTRA -s kernelrelease)
     mkdir -p "$DESTDIR/usr/lib/modules/$KERNEL_RELEASE"
     make $EXTRA INSTALL_MOD_PATH="$DESTDIR/usr" modules_install
     make $EXTRA INSTALL_PATH="$DESTDIR/usr/lib/modules/$KERNEL_RELEASE" install
@@ -153,7 +146,7 @@ if [ -f "$SRCDIR/kernel/Makefile" ]; then
             SELFTESTS_SKIP_TARGETS=""
         fi
 
-        $SU make -C tools/testing/selftests -j "$(nproc)" $EXTRA KSFT_INSTALL_PATH="$DESTDIR/usr/lib/kernel/selftests" $SELFTESTS_TARGETS $SELFTESTS_SKIP_TARGETS
+        make -C tools/testing/selftests -j "$(nproc)" $EXTRA KSFT_INSTALL_PATH="$DESTDIR/usr/lib/kernel/selftests" $SELFTESTS_TARGETS $SELFTESTS_SKIP_TARGETS
         mkdir -p "$DESTDIR/usr/lib/kernel/selftests"
         make -C tools/testing/selftests -j "$(nproc)" $EXTRA KSFT_INSTALL_PATH="$DESTDIR/usr/lib/kernel/selftests" $SELFTESTS_TARGETS $SELFTESTS_SKIP_TARGETS install
         mkdir -p "$DESTDIR/usr/bin"

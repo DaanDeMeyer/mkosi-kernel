@@ -1,12 +1,12 @@
 # mkosi-kernel
 
 This repository hosts mkosi configuration files intended for kernel development
-using mkosi. By default, a fedora rawhide image is built which is booted with
-qemu's direct kernel boot and VirtioFS.
+using mkosi. By default, a an image is built which is booted with qemu's direct
+kernel boot and VirtioFS.
 
-To get started, write the distribution you want to build to mkosi.conf in the
-root of the repository in the Distribution section. Currently CentOS, Fedora and
-Debian are supported. For example, for fedora, write the following:
+To get started, write the distribution you want to build to mkosi.local.conf in
+the root of the repository in the Distribution section. Currently CentOS, Fedora
+and Debian are supported. For example, for fedora, write the following:
 
 ```conf
 [Distribution]
@@ -20,7 +20,7 @@ $ mkosi -f qemu
 ```
 
 To exit qemu, press `ctrl+a` followed by `c` to enter the qemu monitor, and then
-type `quit` to exit the VM.
+type `quit` to exit the VM. Alternatively, run `systemctl poweroff`.
 
 To build your own kernel, add the following to `mkosi.conf`:
 
@@ -59,7 +59,7 @@ environment variable.
 This configuration will download the required tools to build and boot the image
 on the fly. To use this configuration, the following tools have to be installed:
 
-- mkosi v18
+- mkosi v19
 - python 3.9 (Set `$MKOSI_INTERPRETER` to point to an alternative interpreter)
 - bubblewrap
 - package manager of the distribution you're building
