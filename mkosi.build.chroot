@@ -128,10 +128,16 @@ if [ -f "$SRCDIR/kernel/Makefile" ]; then
     make $EXTRA -j "$(nproc)" headers
     make $EXTRA INSTALL_HDR_PATH="$DESTDIR/usr" headers_install
 
+    if [ "$ARCHITECTURE" = "arm64" ]; then
+        INSTALL="zinstall"
+    else
+        INSTALL="install"
+    fi
+
     KERNEL_RELEASE=$(make $EXTRA -s kernelrelease)
     mkdir -p "$DESTDIR/usr/lib/modules/$KERNEL_RELEASE"
     make $EXTRA INSTALL_MOD_PATH="$DESTDIR/usr" modules_install
-    make $EXTRA INSTALL_PATH="$DESTDIR/usr/lib/modules/$KERNEL_RELEASE" install
+    make $EXTRA INSTALL_PATH="$DESTDIR/usr/lib/modules/$KERNEL_RELEASE" "$INSTALL"
 
     if [ -n "$SELFTESTS" ]; then
         if [ -n "$SELFTESTS_TARGETS" ]; then
