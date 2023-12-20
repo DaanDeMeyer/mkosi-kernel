@@ -2,3 +2,5 @@ mkosi.output/
 mkosi.cache/
 mkosi.builddir/
 mkosi.local.conf
+mkosi.crt
+mkosi.key
