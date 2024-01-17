@@ -4,9 +4,9 @@ This repository hosts mkosi configuration files intended for kernel development
 using mkosi. By default, a an image is built which is booted with qemu's direct
 kernel boot and VirtioFS.
 
-To get started, write the distribution you want to build to mkosi.local.conf in
-the root of the repository in the Distribution section. Currently CentOS, Fedora
-and Debian are supported. For example, for fedora, write the following:
+To get started, write the distribution you want to build to `mkosi.local.conf`
+in the root of the repository in the Distribution section. Currently CentOS,
+Fedora and Debian are supported. For example, for fedora, write the following:
 
 ```conf
 [Distribution]
@@ -25,6 +25,9 @@ type `quit` to exit the VM. Alternatively, run `systemctl poweroff`.
 To build your own kernel, add the following to `mkosi.conf`:
 
 ```conf
+[Config]
+@Include=modules/kernel
+
 [Content]
 BuildSources=<path-to-your-kernel-sources>:kernel
 ```
@@ -53,6 +56,35 @@ For each kernel, the out-of-tree build subdirectory used is synthesized from
 the localversion files in the given kernel source tree, the
 `CONFIG_LOCALVERSION` setting in the configuration and the `$LOCALVERSION`
 environment variable.
+
+Various other modules are supported as well. For example, to use the btrfs-progs
+module to bulid and install btrfs-progs:
+
+```conf
+[Config]
+@Include=modules/btrfs-progs
+
+[Content]
+BuildSources=<path-to-your-btrfs-progs-sources>:btrfs-progs
+```
+
+The same applies to the other modules (`fstests`, `ltp`, `blktests`,
+`bpfilter`).
+
+To enable multiple modules, you can do the following:
+
+```conf
+[Config]
+@Include=modules/btrfs-progs
+         modules/kernel
+
+[Content]
+BuildSources=<path-to-your-btrfs-progs-sources>:btrfs-progs
+             <path-to-your-kernel-sources>:kernel
+```
+
+To temporarily disable building a specific module, you can simply comment out
+the relevant `BuildSources=` entry without disabling the module itself.
 
 ## Requirements
 

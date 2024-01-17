@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+if [ ! -f fstests/Makefile ]; then
+    exit 0
+fi
+
+cd fstests/
+make clean
+make -j "$(nproc)"

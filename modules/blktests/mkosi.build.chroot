@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+if [ ! -f blktests/Makefile ]; then
+    exit 0
+fi
+
+cp --archive --update --reflink=auto blktests "$BUILDDIR"
+cd "$BUILDDIR/blktests"
+make -j "$(nproc)"
+make install

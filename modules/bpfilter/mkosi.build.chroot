@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+if [ ! -f bpfilter/CMakeLists.txt ]; then
+    exit 0
+fi
+
+cmake -S "$SRCDIR/bpfilter" -B "$BUILDDIR/bpfilter"
+cmake --build "$BUILDDIR/bpfilter"
+cmake --install "$BUILDDIR/bpfilter" --prefix /usr

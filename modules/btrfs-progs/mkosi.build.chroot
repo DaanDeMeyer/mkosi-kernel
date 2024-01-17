@@ -1,0 +1,26 @@
+#!/bin/sh
+set -e
+
+if [ ! -f btrfs-progs/autogen.sh ]; then
+    exit 0
+fi
+
+cp --archive --update --reflink=auto btrfs-progs "$BUILDDIR"
+cd "$BUILDDIR/btrfs-progs"
+
+if [ ! -f ./configure ]; then
+    ./autogen.sh
+fi
+
+if [ ! -f ./Makefile.inc ]; then
+    ./configure \
+            --disable-documentation \
+            --enable-experimental \
+            --bindir=/usr/bin \
+            --prefix=/usr \
+            --exec-prefix=/usr \
+            --disable-python
+fi
+
+make -j "$(nproc)"
+make install

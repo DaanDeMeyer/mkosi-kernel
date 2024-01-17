@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+if [ ! -f ltp/Makefile ]; then
+    exit 0
+fi
+
+cp --archive --update --reflink=auto ltp "$BUILDDIR"
+cd "$BUILDDIR/ltp"
+make -j "$(nproc)" autotools
+./configure
+make -j "$(nproc)"
+make install
