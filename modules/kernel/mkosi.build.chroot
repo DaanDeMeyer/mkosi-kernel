@@ -75,7 +75,7 @@ if [ -x /sbin/installkernel ]; then
 fi
 
 # Make sure systemd-boot boots this kernel and not the distro provided one by overriding the version.
-EXTRA="O=$BUILDDIR VERSION=99 CARGO_HOME=/usr/share/cargo CARGO_OFFLINE=1"
+EXTRA="O=$BUILDDIR VERSION=99"
 
 make KCONFIG_ALLCONFIG="$SRCDIR/$CONFIG" O=$BUILDDIR alldefconfig
 
