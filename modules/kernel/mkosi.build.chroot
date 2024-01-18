@@ -42,6 +42,11 @@ if [ -z "$CONFIG" ]; then
     fi
 fi
 
+if [ ! -f "$SRCDIR/$CONFIG" ]; then
+    echo "Kernel config not found at $CONFIG" >&2
+    exit 1
+fi
+
 echo "Using kernel config $CONFIG"
 
 collect_files()
