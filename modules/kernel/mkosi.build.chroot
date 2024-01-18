@@ -82,7 +82,11 @@ fi
 # Make sure systemd-boot boots this kernel and not the distro provided one by overriding the version.
 EXTRA="O=$BUILDDIR VERSION=99"
 
-make KCONFIG_ALLCONFIG="$SRCDIR/$CONFIG" O=$BUILDDIR alldefconfig
+if [ ! -f "$BUILDDIR/.config" ] || \
+   [ "$SRCDIR/$CONFIG" -nt "$BUILDDIR/.config" ] || \
+   [ -n "$(make -s O=$BUILDDIR listnewconfig)" ]; then
+    make KCONFIG_ALLCONFIG="$SRCDIR/$CONFIG" O=$BUILDDIR alldefconfig
+fi
 
 # Ensure fast incremental builds by fixating these values which usually change for each build.
 export KBUILD_BUILD_TIMESTAMP="Fri Jun  5 15:58:00 CEST 2015"
