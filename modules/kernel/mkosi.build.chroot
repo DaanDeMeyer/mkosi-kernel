@@ -82,6 +82,10 @@ fi
 # Make sure systemd-boot boots this kernel and not the distro provided one by overriding the version.
 EXTRA="O=$BUILDDIR VERSION=99"
 
+if ((LLVM)); then
+    EXTRA="$EXTRA LLVM=1"
+fi
+
 if [ ! -f "$BUILDDIR/.config" ] || \
    [ "$SRCDIR/$CONFIG" -nt "$BUILDDIR/.config" ] || \
    [ -n "$(make -s O=$BUILDDIR listnewconfig)" ]; then
