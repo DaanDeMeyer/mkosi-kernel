@@ -5,15 +5,16 @@ if [ ! -f ltp/Makefile ]; then
     exit 0
 fi
 
-if [ ! -f ltp/configure ]; then
-    make -C ltp autotools
-fi
-
 mkdir -p "$BUILDDIR/ltp"
 cd "$BUILDDIR/ltp"
 
+if [ ! -f "$SRCDIR/ltp/configure" ]; then
+    rm -f config.status
+    make -C "$SRCDIR/ltp" autotools
+fi
+
 if [ ! -f config.status ]; then
-    $SRCDIR/ltp/configure --disable-metadata
+    "$SRCDIR/ltp/configure" --disable-metadata
 fi
 
 make \
