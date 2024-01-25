@@ -5,9 +5,25 @@ if [ ! -f ltp/Makefile ]; then
     exit 0
 fi
 
-cp --archive --update --reflink=auto ltp "$BUILDDIR"
+if [ ! -f ltp/configure ]; then
+    make -C ltp autotools
+fi
+
+mkdir -p "$BUILDDIR/ltp"
 cd "$BUILDDIR/ltp"
-make -j "$(nproc)" autotools
-./configure
-make -j "$(nproc)"
-make install
+
+if [ ! -f config.status ]; then
+    $SRCDIR/ltp/configure --disable-metadata
+fi
+
+make \
+    -j "$(nproc)" \
+    -f "$SRCDIR/ltp/Makefile" \
+    "top_srcdir=$SRCDIR/ltp" \
+    "top_builddir=$PWD" \
+
+make \
+    -f "$SRCDIR/ltp/Makefile" \
+    "top_srcdir=$SRCDIR/ltp" \
+    "top_builddir=$PWD" \
+    install
