@@ -35,7 +35,13 @@ while true; do
 done
 
 if [ -z "$CONFIG" ]; then
-    if [ -f "$SRCDIR/mkosi.kernel.$ARCHITECTURE.config" ]; then
+    if [ -f "facebook/scripts/prepareconfig" ]; then
+        echo "Generating facebook config"
+        ./facebook/scripts/prepareconfig x86_64
+        cp .config $SRCDIR/generated.kernel.config
+        rm .config
+        CONFIG="generated.kernel.config"
+    elif [ -f "$SRCDIR/mkosi.kernel.$ARCHITECTURE.config" ]; then
         CONFIG="mkosi.kernel.$ARCHITECTURE.config"
     elif [ -f kernel/mkosi.kernel.config ]; then
         CONFIG=kernel/mkosi.kernel.config
