@@ -87,7 +87,7 @@ if ((LLVM)); then
 fi
 
 if [ ! -f "$BUILDDIR/.config" ] || \
-   [ ! -e "$BUILDDIR/mkosi.kernel.config.previous" ]; || \
+   [ ! -e "$BUILDDIR/mkosi.kernel.config.previous" ] || \
    ! cmp --silent "$SRCDIR/$CONFIG" "$BUILDDIR/mkosi.kernel.config.previous" || \
    [ -n "$(make -s O=$BUILDDIR listnewconfig)" ]; then
     cp "$SRCDIR/$CONFIG" "$BUILDDIR/mkosi.kernel.config.previous"
