@@ -91,7 +91,7 @@ the relevant `BuildSources=` entry without disabling the module itself.
 This configuration will download the required tools to build and boot the image
 on the fly. To use this configuration, the following tools have to be installed:
 
-- mkosi v19
+- mkosi v20
 - python 3.9 (Set `$MKOSI_INTERPRETER` to point to an alternative interpreter)
 - bubblewrap
 - package manager of the distribution you're building
