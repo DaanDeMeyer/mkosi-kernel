@@ -7,6 +7,7 @@ fi
 
 cd fstests/
 cp "$SRCDIR/mkosi.fstests.config" local.config
+cp $SRCDIR/EXCLUDE* .
 mkdir -p "$DESTDIR/mnt/test"
 mkdir -p "$DESTDIR/mnt/scratch"
 make clean

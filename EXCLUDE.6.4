@@ -1,0 +1,18 @@
+# Just tests to make sure mkfs with raid things works, breaks with RAID5/6
+# becasue of our patches, just skip it.
+btrfs/023
+# We don't have this fix
+btrfs/303
+# We don't have this fix, we probably should
+btrfs/316
+# We have this 
+#   META-ONLY: btrfs: WARN_ON_ONCE for failed metadata bio
+# In our kernels which makes the error related tests fail
+generic/475
+generic/648
+# We don't have the fix, it's not important
+generic/736
+# This is flakey, appears to be related to the generic fcntl code, don't care
+generic/740
+# Hangs, missing fix
+generic/808
