@@ -6,9 +6,3 @@ useradd --create-home --user-group --uid 3000 fsgqa2
 useradd --create-home --user-group --uid 4000 123456-fsgqa
 
 mkosi-chroot sh -c "command -v authselect >/dev/null && authselect select minimal || true"
-
-# If no user built kernel was installed, install the distro one.
-
-if [ -z "$(ls --almost-all "$BUILDROOT/usr/lib/modules")" ]; then
-    mkosi-install "$KERNEL_PACKAGE"
-fi
