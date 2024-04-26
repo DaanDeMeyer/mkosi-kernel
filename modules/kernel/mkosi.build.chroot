@@ -100,7 +100,12 @@ export KBUILD_BUILD_USER="mkosi"
 
 make $EXTRA -j "$(nproc)"
 make $EXTRA -j "$(nproc)" headers
-make $EXTRA INSTALL_HDR_PATH="$DESTDIR/usr" headers_install
+
+# FIXME: Re-enable when coreutils 9.5 gets into debian testing.
+. /usr/lib/os-release
+if [ ! "$ID" = "debian" ]; then
+    make $EXTRA INSTALL_HDR_PATH="$DESTDIR/usr" headers_install
+fi
 
 if [ "$ARCHITECTURE" = "arm64" ]; then
     INSTALL="zinstall"
