@@ -101,14 +101,29 @@ fi
 
 KERNEL_RELEASE=$(make $EXTRA -s kernelrelease)
 
-ln -sf "$BUILDDIR" /tmp/lib
+# When doing modules_install, we need to forcefully install everything in
+# /usr/lib. This is because (open)SUSE's depmod requires /usr/lib with no way
+# to work around it, and the upstream kernel make infrastructure cannot
+# auto-detect what it needs to do (there was a patch but it was rejected by
+# upstream). In addition, since other distributions' depmods don't want to use
+# /usr/lib we also need to link /lib -> /usr/lib to ensure builds still work
+# for non-(open)SUSE builds.
+#
+# See <https://github.com/DaanDeMeyer/mkosi-kernel/pull/10> for more details
+# and a link to the patch SUSE carries to fix this problem for their kernel
+# builds. The MODLIB= incantation comes from the SUSE patch.
+
+mkdir -p /tmp/usr
+ln -sf usr/lib /tmp/lib
+ln -sf "$BUILDDIR" /tmp/usr/lib
 mkdir -p "$BUILDDIR/modules/$KERNEL_RELEASE"
 find "$BUILDDIR/modules" -mindepth 1 -maxdepth 1 ! -name "$KERNEL_RELEASE" -type d -exec rm -r {} +
-make $EXTRA INSTALL_MOD_PATH=/tmp modules_install
+make $EXTRA INSTALL_MOD_PATH=/tmp MODLIB='$(INSTALL_MOD_PATH)/usr/lib/modules/$(KERNELRELEASE)' modules_install
 
 if ! ((INCREMENTAL)); then
     mkdir -p "$DESTDIR/usr/lib/modules/$KERNEL_RELEASE"
-    make $EXTRA INSTALL_MOD_PATH="$DESTDIR/usr" modules_install
+    ln -sf usr/lib "$DESTDIR/lib"
+    make $EXTRA INSTALL_MOD_PATH="$DESTDIR" MODLIB='$(INSTALL_MOD_PATH)/usr/lib/modules/$(KERNELRELEASE)' modules_install
     make $EXTRA INSTALL_PATH="$DESTDIR/usr/lib/modules/$KERNEL_RELEASE" "$INSTALL"
 fi
 
