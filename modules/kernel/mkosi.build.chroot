@@ -37,7 +37,8 @@ done
 if [ -z "$CONFIG" ]; then
     if [ -f "facebook/scripts/prepareconfig" ]; then
         echo "Generating facebook config"
-        ./facebook/scripts/prepareconfig x86_64
+        ./facebook/scripts/prepareconfig x86_64 || \
+		./facebook/scripts/prepareconfig -a x86_64 -f default -p facebook/config > .config
         cp .config $SRCDIR/generated.kernel.config
         rm .config
         CONFIG="generated.kernel.config"
