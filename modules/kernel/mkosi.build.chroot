@@ -113,10 +113,11 @@ else
     INSTALL="install"
 fi
 
-KERNEL_RELEASE=$(make $EXTRA -s kernelrelease)
-mkdir -p "$DESTDIR/usr/lib/modules/$KERNEL_RELEASE"
+KERNELRELEASE=$(make $EXTRA KERNELRELEASE=6.9.4 -s kernelrelease)
+EXTRA="$EXTRA KERNELRELEASE=$KERNELRELEASE"
+mkdir -p "$DESTDIR/usr/lib/modules/$KERNELRELEASE"
 make $EXTRA INSTALL_MOD_PATH="$DESTDIR/usr" modules_install
-make $EXTRA INSTALL_PATH="$DESTDIR/usr/lib/modules/$KERNEL_RELEASE" "$INSTALL"
+make $EXTRA INSTALL_PATH="$DESTDIR/usr/lib/modules/$KERNELRELEASE" "$INSTALL"
 
 if [ -n "$SELFTESTS" ]; then
     if [ -n "$SELFTESTS_TARGETS" ]; then
