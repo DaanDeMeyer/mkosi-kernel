@@ -1,0 +1,7 @@
+[Service]
+Type=oneshot
+ExecStart=mkfs.btrfs -f /dev/nvme0n1
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
