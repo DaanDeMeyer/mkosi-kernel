@@ -69,6 +69,13 @@ collect_files()
 FILE_LOCALVERSION="$(collect_files localversion*)"
 CONFIG_LOCALVERSION=$(sed -n 's/^CONFIG_LOCALVERSION=\(.*\)$/\1/p' "$SRCDIR/$CONFIG")
 
+# If LOCALVERSION is not set, kbuild will do a very expensive git describe
+# command to determine a git version suffix to append to the kernel version, so
+# let's make sure it is set to the empty string if not set explicitly to avoid
+# that.
+LOCALVERSION=${LOCALVERSION:-""}
+export LOCALVERSION
+
 BUILDDIR="$BUILDDIR/kernel/${FILE_LOCALVERSION}${CONFIG_LOCALVERSION}${LOCALVERSION}"
 
 echo "Using kernel build directory $BUILDDIR"
@@ -79,7 +86,7 @@ if [ -x /sbin/installkernel ]; then
     mount --bind /dev/null /sbin/installkernel
 fi
 
-EXTRA="O=$BUILDDIR LOCALVERSION=''"
+EXTRA="O=$BUILDDIR"
 
 if ((LLVM)); then
     EXTRA="$EXTRA LLVM=1"
