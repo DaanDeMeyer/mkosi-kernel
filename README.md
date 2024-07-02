@@ -53,9 +53,8 @@ To build the selftests, set `SELFTESTS=1` using `Environment=`.
 as bpf which can take a long time to rebuild.
 
 For each kernel, the out-of-tree build subdirectory used is synthesized from
-the localversion files in the given kernel source tree, the
-`CONFIG_LOCALVERSION` setting in the configuration and the `$LOCALVERSION`
-environment variable.
+the localversion files in the given kernel source tree and the
+`CONFIG_LOCALVERSION` setting in the configuration.
 
 Various other modules are supported as well. For example, to use the btrfs-progs
 module to bulid and install btrfs-progs:

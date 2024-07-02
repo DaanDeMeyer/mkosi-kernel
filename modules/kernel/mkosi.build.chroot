@@ -79,7 +79,7 @@ if [ -x /sbin/installkernel ]; then
     mount --bind /dev/null /sbin/installkernel
 fi
 
-EXTRA="O=$BUILDDIR"
+EXTRA="O=$BUILDDIR LOCALVERSION=''"
 
 if ((LLVM)); then
     EXTRA="$EXTRA LLVM=1"
