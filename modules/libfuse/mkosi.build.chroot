@@ -1,0 +1,18 @@
+#!/bin/bash
+set -e
+
+if [ ! -f libfuse/meson.build ]; then
+	exit 0
+fi
+
+cp --archive --update --reflink=auto libfuse "$BUILDDIR"
+cd "$BUILDDIR/libfuse"
+
+mkdir -p build; cd build
+meson setup --wipe ..
+meson configure -D prefix=/usr
+meson configure -D useroot=false
+meson setup --reconfigure ../
+ninja
+ninja install
+cp example/passthrough_hp $DESTDIR/usr/bin

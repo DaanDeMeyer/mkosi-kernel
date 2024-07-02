@@ -7,8 +7,11 @@ fi
 
 cd fstests/
 cp "$SRCDIR/mkosi.fstests.config" local.config
+cp "$SRCDIR/mkosi.fstests.fuse.config" fuse.config
 cp $SRCDIR/EXCLUDE* .
 mkdir -p "$DESTDIR/mnt/test"
 mkdir -p "$DESTDIR/mnt/scratch"
+mkdir -p "$DESTDIR/mnt/src/test"
+mkdir -p "$DESTDIR/mnt/src/scratch"
 make clean
 make -j "$(nproc)"
