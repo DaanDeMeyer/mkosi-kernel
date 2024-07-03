@@ -20,3 +20,5 @@ disable dnf-makecache.*
 
 # We have journald to receive audit data so let's make sure we're not running auditd as well
 disable auditd.service
+
+enable usr-lib-modules.mount

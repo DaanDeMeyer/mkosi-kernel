@@ -1,0 +1,76 @@
+#!/bin/bash
+set -e
+
+TEMP=$( \
+    getopt \
+    -o 'c:i' \
+    --long 'incremental' \
+    --long 'fstests' \
+    --long 'kernel' \
+    --long 'config' \
+    --long 'btrfs-progs' \
+    --long 'ltp' \
+    --long 'bpfilter' \
+    -n 'mkosi.build' \
+    -- "$@" \
+)
+
+eval set -- "$TEMP"
+unset TEMP
+
+while true; do
+    case "$1" in
+        '-i'|'--incremental')
+            INCREMENTAL=1
+            shift 1
+            continue
+        ;;
+        '--fstests')
+            FSTESTS=1
+            shift 1
+            continue
+        ;;
+        '--kernel')
+            KERNEL=1
+            shift 1
+            continue
+        ;;
+        '-c'|'--config')
+            CONFIG="$2"
+            shift 2
+            continue
+        ;;
+        '--ltp')
+            LTP=1
+            shift 1
+            continue
+        ;;
+        '--btrfs-progs')
+            BTRFS_PROGS=1
+            shift 1
+            continue
+        ;;
+        '--bpfilter')
+            BPFILTER=1
+            shift 1
+            continue
+        ;;
+        '--')
+            shift
+            break
+        ;;
+        *)
+            exit 1
+        ;;
+    esac
+done
+
+cat >"$ARTIFACTDIR"/env <<EOF
+INCREMENTAL=$INCREMENTAL
+FSTESTS=$FSTESTS
+KERNEL=$KERNEL
+CONFIG=$CONFIG
+LTP=$LTP
+BTRFS_PROGS=$BTRFS_PROGS
+BPFILTER=$BPFILTER
+EOF

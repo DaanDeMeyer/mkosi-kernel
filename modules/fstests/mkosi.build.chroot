@@ -5,6 +5,13 @@ if [ ! -f fstests/Makefile ]; then
     exit 0
 fi
 
-cd fstests/
-make clean
+. "$ARTIFACTDIR"/env
+
+((INCREMENTAL)) && ! ((FSTESTS)) && exit 0
+
+cp --archive --update --reflink=auto fstests "$BUILDDIR"
+cd "$BUILDDIR/fstests"
+
 make -j "$(nproc)"
+
+exit 0

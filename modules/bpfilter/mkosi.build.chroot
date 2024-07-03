@@ -5,6 +5,12 @@ if [ ! -f bpfilter/CMakeLists.txt ]; then
     exit 0
 fi
 
+. "$ARTIFACTDIR"/env
+
+((INCREMENTAL)) && ! ((BPFILTER)) && exit 0
+
 cmake -S "$SRCDIR/bpfilter" -B "$BUILDDIR/bpfilter"
 cmake --build "$BUILDDIR/bpfilter"
-cmake --install "$BUILDDIR/bpfilter" --prefix /usr
+! ((INCREMENTAL)) && cmake --install "$BUILDDIR/bpfilter" --prefix /usr
+
+exit 0

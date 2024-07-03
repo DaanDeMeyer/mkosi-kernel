@@ -5,6 +5,10 @@ if [ ! -f ltp/Makefile ]; then
     exit 0
 fi
 
+. "$ARTIFACTDIR"/env
+
+((INCREMENTAL)) && ! ((LTP)) && exit 0
+
 mkdir -p "$BUILDDIR/ltp"
 cd "$BUILDDIR/ltp"
 
@@ -23,8 +27,11 @@ make \
     "top_srcdir=$SRCDIR/ltp" \
     "top_builddir=$PWD" \
 
-make \
+! ((INCREMENTAL)) && \
+    make \
     -f "$SRCDIR/ltp/Makefile" \
     "top_srcdir=$SRCDIR/ltp" \
     "top_builddir=$PWD" \
     install
+
+exit 0

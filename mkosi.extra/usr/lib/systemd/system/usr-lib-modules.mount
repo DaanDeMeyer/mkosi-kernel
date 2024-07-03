@@ -1,0 +1,10 @@
+[Unit]
+ConditionPathExists=/work/build/kernel/modules
+
+[Mount]
+What=/work/build/kernel/modules
+Where=/usr/lib/modules
+Options=bind
+
+[Install]
+WantedBy=multi-user.target

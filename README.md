@@ -98,6 +98,57 @@ on the fly. To use this configuration, the following tools have to be installed:
 - coreutils
 - util-linux
 
+## Incremental builds
+
+To avoid having to rebuild the image for every change made to a module,
+mkosi-kernel supports incremental builds that allows for rebuilding projects
+and making the changes available in the image without rebuilding the image
+itself. Using this mode requires mkosi version `24~devel` or newer.
+
+To make use of this, we'll need to make sure the source and build directories
+of each module are mounted into the virtual machine by adding the following to
+our mkosi.local.conf:
+
+```conf
+[Host]
+RuntimeBuildSources=yes
+```
+
+Next, build and boot the image with `mkosi -f qemu`. In the virtual machine, the
+sources of each enabled module can be accessed at `/work/src` and the build
+directory of each module can be accessed at `/work/build`. Additionally, the
+kernel modules are automatically bind mounted from `/work/build/kernel/modules`
+to `/usr/lib/modules` if that directory is available.
+
+To rebuild each module without rebuilding the image, open another terminal on
+the host and run `mkosi -t none build -i`. This will rebuild each enabled
+module. To select which modules to rebuild, simply pass the name of the module
+as an option. For example, run `mkosi -t none build -i --btrfs-progs` to only
+rebuild the btrfs-progs module. After the command finishes, the changes will be
+available in `/work/build` in the virtual machine.
+
+Note that for the kernel module, only modules are rebuilt, so this approach does
+not work if the corresponding code in the kernel cannot be compiled as a module.
+
+To reload a kernel module after doing a incremental build, run `rmmod <module>`
+followed by `modprobe <module>`. Of course you need to make sure the module is
+not currently being used to be able to remove it. For example, if you're
+building a disk image and hacking on a filesystem (e.g. `btrfs`), you have to
+make sure the rootfs is not on `btrfs` to be able to unload the `btrfs` module
+with `rmmod`. You can override the filesystem used by `systemd-repart` when
+mkosi builds a disk image by creating a directory `mkosi.repart` in the
+mkosi-kernel repository and writing a file `00-root.conf` in there with the
+following contents:
+
+```conf
+[Partition]
+Type=root
+Format=<filesystem>
+CopyFiles=/
+SizeMinBytes=8G
+SizeMaxBytes=8G
+```
+
 ## Contributing
 
 All package and kconfig lists must be sorted using `sort -u`.

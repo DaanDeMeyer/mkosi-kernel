@@ -5,6 +5,10 @@ if [ ! -f btrfs-progs/autogen.sh ]; then
     exit 0
 fi
 
+. "$ARTIFACTDIR"/env
+
+((INCREMENTAL)) && ! ((BTRFS_PROGS)) && exit 0
+
 cp --archive --update --reflink=auto btrfs-progs "$BUILDDIR"
 cd "$BUILDDIR/btrfs-progs"
 
@@ -23,4 +27,6 @@ if [ ! -f ./Makefile.inc ]; then
 fi
 
 make -j "$(nproc)"
-make install
+! ((INCREMENTAL)) && make install
+
+exit 0

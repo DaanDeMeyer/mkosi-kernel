@@ -5,34 +5,9 @@ if [ ! -f kernel/Makefile ]; then
     exit 0
 fi
 
-cd kernel/
+. "$ARTIFACTDIR"/env
 
-TEMP=$(getopt -o 'c:' --long 'config:' -n 'mkosi.build' -- "$@")
-if [ $? -ne 0 ]; then
-        echo 'Terminating...' >&2
-        exit 1
-fi
-
-eval set -- "$TEMP"
-unset TEMP
-
-while true; do
-    case "$1" in
-        '-c'|'--config')
-            CONFIG="$2"
-            shift 2
-            continue
-        ;;
-        '--')
-            shift
-            break
-        ;;
-        *)
-            echo 'Internal error!' >&2
-            exit 1
-        ;;
-    esac
-done
+((INCREMENTAL)) && ! ((KERNEL)) && exit 0
 
 if [ -z "$CONFIG" ]; then
     if [ -f kernel/mkosi.kernel.config ]; then
@@ -66,6 +41,8 @@ collect_files()
     echo "$res"
 }
 
+cd kernel/
+
 FILE_LOCALVERSION="$(collect_files localversion*)"
 CONFIG_LOCALVERSION=$(sed -n 's/^CONFIG_LOCALVERSION=\(.*\)$/\1/p' "$SRCDIR/$CONFIG")
 
@@ -92,12 +69,14 @@ if ((LLVM)); then
     EXTRA="$EXTRA LLVM=1"
 fi
 
-if [ ! -f "$BUILDDIR/.config" ] || \
-   [ ! -e "$BUILDDIR/mkosi.kernel.config.previous" ] || \
-   ! cmp --silent "$SRCDIR/$CONFIG" "$BUILDDIR/mkosi.kernel.config.previous" || \
-   [ -n "$(make -s O=$BUILDDIR listnewconfig)" ]; then
-    cp "$SRCDIR/$CONFIG" "$BUILDDIR/mkosi.kernel.config.previous"
-    make KCONFIG_ALLCONFIG="$SRCDIR/$CONFIG" O=$BUILDDIR alldefconfig
+if ! ((INCREMENTAL)); then
+    if [ ! -f "$BUILDDIR/.config" ] || \
+        [ ! -e "$BUILDDIR/mkosi.kernel.config.previous" ] || \
+        ! cmp --silent "$SRCDIR/$CONFIG" "$BUILDDIR/mkosi.kernel.config.previous" || \
+        [ -n "$(make -s O=$BUILDDIR listnewconfig)" ]; then
+            cp "$SRCDIR/$CONFIG" "$BUILDDIR/mkosi.kernel.config.previous"
+            make KCONFIG_ALLCONFIG="$SRCDIR/$CONFIG" O=$BUILDDIR alldefconfig
+    fi
 fi
 
 # Ensure fast incremental builds by fixating these values which usually change for each build.
@@ -105,12 +84,11 @@ export KBUILD_BUILD_TIMESTAMP="Fri Jun  5 15:58:00 CEST 2015"
 export KBUILD_BUILD_HOST="mkosi"
 export KBUILD_BUILD_USER="mkosi"
 
-make $EXTRA -j "$(nproc)"
-make $EXTRA -j "$(nproc)" headers
+make $EXTRA -j "$(nproc)" $( ((INCREMENTAL)) && echo modules)
 
 # FIXME: Re-enable when coreutils 9.5 gets into debian testing.
 . /usr/lib/os-release
-if [ ! "$ID" = "debian" ]; then
+if ! ((INCREMENTAL)) && [ ! "$ID" = "debian" ]; then
     make $EXTRA INSTALL_HDR_PATH="$DESTDIR/usr" headers_install
 fi
 
@@ -121,11 +99,19 @@ else
 fi
 
 KERNEL_RELEASE=$(make $EXTRA -s kernelrelease)
-mkdir -p "$DESTDIR/usr/lib/modules/$KERNEL_RELEASE"
-make $EXTRA INSTALL_MOD_PATH="$DESTDIR/usr" modules_install
-make $EXTRA INSTALL_PATH="$DESTDIR/usr/lib/modules/$KERNEL_RELEASE" "$INSTALL"
 
-if [ -n "$SELFTESTS" ]; then
+ln -sf "$BUILDDIR" /tmp/lib
+mkdir -p "$BUILDDIR/modules/$KERNEL_RELEASE"
+find "$BUILDDIR/modules" -mindepth 1 -maxdepth 1 ! -name "$KERNEL_RELEASE" -type d -exec rm -r {} +
+make $EXTRA INSTALL_MOD_PATH=/tmp modules_install
+
+if ! ((INCREMENTAL)); then
+    mkdir -p "$DESTDIR/usr/lib/modules/$KERNEL_RELEASE"
+    make $EXTRA INSTALL_MOD_PATH="$DESTDIR/usr" modules_install
+    make $EXTRA INSTALL_PATH="$DESTDIR/usr/lib/modules/$KERNEL_RELEASE" "$INSTALL"
+fi
+
+if ((SELFTESTS)); then
     if [ -n "$SELFTESTS_TARGETS" ]; then
         SELFTESTS_TARGETS="TARGETS=$SELFTESTS_TARGETS"
     else
@@ -139,8 +125,12 @@ if [ -n "$SELFTESTS" ]; then
     fi
 
     make -C tools/testing/selftests -j "$(nproc)" $EXTRA KSFT_INSTALL_PATH="$DESTDIR/usr/lib/kernel/selftests" $SELFTESTS_TARGETS $SELFTESTS_SKIP_TARGETS
-    mkdir -p "$DESTDIR/usr/lib/kernel/selftests"
-    make -C tools/testing/selftests -j "$(nproc)" $EXTRA KSFT_INSTALL_PATH="$DESTDIR/usr/lib/kernel/selftests" $SELFTESTS_TARGETS $SELFTESTS_SKIP_TARGETS install
-    mkdir -p "$DESTDIR/usr/bin"
-    ln -sf /usr/lib/kernel/selftests/bpf/bpftool "$DESTDIR/usr/bin/bpftool"
+    if ! ((INCREMENTAL)); then
+        mkdir -p "$DESTDIR/usr/lib/kernel/selftests"
+        make -C tools/testing/selftests -j "$(nproc)" $EXTRA KSFT_INSTALL_PATH="$DESTDIR/usr/lib/kernel/selftests" $SELFTESTS_TARGETS $SELFTESTS_SKIP_TARGETS install
+        mkdir -p "$DESTDIR/usr/bin"
+        ln -sf /usr/lib/kernel/selftests/bpf/bpftool "$DESTDIR/usr/bin/bpftool"
+    fi
 fi
+
+exit 0
