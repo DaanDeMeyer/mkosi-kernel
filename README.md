@@ -26,7 +26,7 @@ To build your own kernel, add the following to `mkosi.conf`:
 
 ```conf
 [Config]
-@Include=modules/kernel
+Include=modules/kernel
 
 [Content]
 BuildSources=<path-to-your-kernel-sources>:kernel
@@ -62,7 +62,7 @@ module to bulid and install btrfs-progs:
 
 ```conf
 [Config]
-@Include=modules/btrfs-progs
+Include=modules/btrfs-progs
 
 [Content]
 BuildSources=<path-to-your-btrfs-progs-sources>:btrfs-progs
@@ -75,8 +75,8 @@ To enable multiple modules, you can do the following:
 
 ```conf
 [Config]
-@Include=modules/btrfs-progs
-         modules/kernel
+Include=modules/btrfs-progs
+        modules/kernel
 
 [Content]
 BuildSources=<path-to-your-btrfs-progs-sources>:btrfs-progs
