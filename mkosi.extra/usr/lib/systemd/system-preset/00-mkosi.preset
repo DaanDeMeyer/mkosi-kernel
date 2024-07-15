@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
 # mkosi adds its own ssh units via the --ssh switch so disable the default ones.
 disable ssh.service
 disable sshd.service
