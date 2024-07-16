@@ -49,6 +49,10 @@ if [ -z "$CONFIG" ]; then
     else
         CONFIG=mkosi.kernel.config
     fi
+
+    if [ -f "facebook/scripts/bootconfig" ]; then
+        ./facebook/scripts/bootconfig -a "x86_64" -f default -p facebook/config > $SRCDIR/generated.boot.config
+    fi
 fi
 
 if [ ! -f "$SRCDIR/$CONFIG" ]; then
@@ -76,7 +80,10 @@ collect_files()
 }
 
 FILE_LOCALVERSION="$(collect_files localversion*)"
-CONFIG_LOCALVERSION=$(sed -n 's/^CONFIG_LOCALVERSION=\(.*\)$/\1/p' "$SRCDIR/$CONFIG")
+CONFIG_LOCALVERSION=
+if ! grep -q "LOCALVERSION_AUTO" "$SRCDIR/$CONFIG"; then
+	CONFIG_LOCALVERSION=$(sed -n 's/^CONFIG_LOCALVERSION=\(.*\)$/\1/p' "$SRCDIR/$CONFIG")
+fi
 
 BUILDDIR="$BUILDDIR/kernel/${FILE_LOCALVERSION}${CONFIG_LOCALVERSION}${LOCALVERSION}"
 
@@ -99,6 +106,11 @@ if [ ! -f "$BUILDDIR/.config" ] || \
    [ "$SRCDIR/$CONFIG" -nt "$BUILDDIR/.config" ] || \
    [ -n "$(make -s O=$BUILDDIR listnewconfig)" ]; then
     make KCONFIG_ALLCONFIG="$SRCDIR/$CONFIG" O=$BUILDDIR alldefconfig
+fi
+
+if [ -f "$SRCDIR/generated.boot.config" ]; then
+    mkdir -p "$BUILDDIR/facebook/config"
+    cp "$SRCDIR/generated.boot.config" "$BUILDDIR/facebook/config/bootconfig"
 fi
 
 # Ensure fast incremental builds by fixating these values which usually change for each build.
