@@ -13,6 +13,8 @@ fi
 cp --archive --update --reflink=auto btrfs-progs "$BUILDDIR"
 cd "$BUILDDIR/btrfs-progs"
 
+ln -sf /usr/bin/python3 /usr/bin/python
+
 if [ ! -f ./configure ]; then
     ./autogen.sh
 fi
