@@ -12,6 +12,7 @@ TEMP=$( \
     --long 'btrfs-progs' \
     --long 'ltp' \
     --long 'bpfilter' \
+    --long 'bpftrace' \
     -n 'mkosi.build' \
     -- "$@" \
 )
@@ -56,6 +57,11 @@ while true; do
             shift 1
             continue
         ;;
+        '--bpftrace')
+            BPFTRACE=1
+            shift 1
+            continue
+        ;;
         '--')
             shift
             break
@@ -74,4 +80,5 @@ CONFIG=$CONFIG
 LTP=$LTP
 BTRFS_PROGS=$BTRFS_PROGS
 BPFILTER=$BPFILTER
+BPFTRACE=$BPFTRACE
 EOF

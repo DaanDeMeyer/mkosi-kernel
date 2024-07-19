@@ -1,0 +1,20 @@
+#!/bin/bash
+# SPDX-License-Identifier: LGPL-2.1-or-later
+set -e
+
+if [ ! -f bpftrace/CMakeLists.txt ]; then
+    exit 0
+fi
+
+. "$ARTIFACTDIR"/env
+
+((INCREMENTAL)) && ! ((BPFTRACE)) && exit 0
+
+if [[ ! -f "$BUILDDIR/bpftrace/build.ninja" ]]; then
+    cmake -S "$SRCDIR/bpftrace" -B "$BUILDDIR/bpftrace" -DENABLE_SYSTEMD=ON -G Ninja
+fi
+
+cmake --build "$BUILDDIR/bpftrace"
+! ((INCREMENTAL)) && cmake --install "$BUILDDIR/bpftrace" --prefix /usr
+
+exit 0
