@@ -149,6 +149,40 @@ SizeMinBytes=8G
 SizeMaxBytes=8G
 ```
 
+## Kernel debugging with gdb
+
+With a few configuration changes, the kernel booted in an mkosi-kernel VM
+can be debugged with gdb. On the mkosi side, this config option is needed
+in order to have qemu listen for gdb, by default on localhost tcp port 1234:
+```conf
+[Host]
+QemuArgs=-s
+```
+
+Mkosi-kernel does the kernel build in a chroot directory, and places the
+vmlinux file in one of its own directories, too. We need to tell gdb
+where all the files are, in order for things to work properly.
+
+```
+$ gdb
+(gdb) file ~/source/mkosi-kernel/mkosi.output/vmlinux
+(gdb) set substitute-path /work/src/kernel ~/source/linux
+(gdb) target remote localhost:1234
+```
+
+Now things are ready to investigate what is happening with the kernel.
+The gdb commands you will want to start with are probably figuring out what
+each CPU is doing, and then getting a backtrace from each CPU:
+
+```
+(gdb) info threads
+(gdb) thread 1
+(gdb) bt
+```
+
+Repeat for each interesting looking CPU, and then dig into the details
+as needed.
+
 ## Contributing
 
 All package and kconfig lists must be sorted using `sort -u`.
