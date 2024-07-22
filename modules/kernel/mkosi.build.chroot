@@ -125,6 +125,8 @@ if ! ((INCREMENTAL)); then
     ln -sf usr/lib "$DESTDIR/lib"
     make $EXTRA INSTALL_MOD_PATH="$DESTDIR" MODLIB='$(INSTALL_MOD_PATH)/usr/lib/modules/$(KERNELRELEASE)' modules_install
     make $EXTRA INSTALL_PATH="$DESTDIR/usr/lib/modules/$KERNEL_RELEASE" "$INSTALL"
+    OUTPUT="$(jq --raw-output .Output <"$MKOSI_CONFIG")"
+    cp "$BUILDDIR"/vmlinux "$OUTPUTDIR/$OUTPUT.vmlinux"
 fi
 
 if ((SELFTESTS)); then
