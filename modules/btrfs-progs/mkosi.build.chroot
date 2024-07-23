@@ -23,7 +23,7 @@ if [ ! -f ./Makefile.inc ]; then
     ./configure \
             --disable-documentation \
             --enable-experimental \
-            --bindir=/usr/sbin \
+            --bindir="$(realpath /usr/sbin)" \
             --prefix=/usr \
             --exec-prefix=/usr \
             --disable-python
