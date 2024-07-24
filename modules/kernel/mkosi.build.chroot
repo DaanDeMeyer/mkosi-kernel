@@ -35,23 +35,21 @@ while true; do
 done
 
 if [ -z "$CONFIG" ]; then
-    if [ -f "facebook/scripts/prepareconfig" ]; then
+    if [ -f kernel/facebook/scripts/prepareconfig ]; then
         echo "Generating facebook config"
-        ./facebook/scripts/prepareconfig x86_64 || \
-		./facebook/scripts/prepareconfig -a x86_64 -f default -p facebook/config > .config
-        cp .config $SRCDIR/generated.kernel.config
-        rm .config
+        kernel/facebook/scripts/prepareconfig x86_64 || \
+        kernel/facebook/scripts/prepareconfig -a x86_64 -f default -p kernel/facebook/config > generated.kernel.config
         CONFIG="generated.kernel.config"
-    elif [ -f "$SRCDIR/mkosi.kernel.$ARCHITECTURE.config" ]; then
-        CONFIG="mkosi.kernel.$ARCHITECTURE.config"
     elif [ -f kernel/mkosi.kernel.config ]; then
         CONFIG=kernel/mkosi.kernel.config
+    elif [ -f "mkosi.kernel.$ARCHITECTURE.config" ]; then
+        CONFIG="mkosi.kernel.$ARCHITECTURE.config"
     else
         CONFIG=mkosi.kernel.config
     fi
 
-    if [ -f "facebook/scripts/bootconfig" ]; then
-        ./facebook/scripts/bootconfig -a "x86_64" -f default -p facebook/config > $SRCDIR/generated.boot.config
+    if [ -f "kernel/facebook/scripts/bootconfig" ]; then
+        kernel/facebook/scripts/bootconfig -a "x86_64" -f default -p kernel/facebook/config > generated.boot.config
     fi
 fi
 
