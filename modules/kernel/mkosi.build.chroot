@@ -38,7 +38,7 @@ if [ -z "$CONFIG" ]; then
     if [ -f kernel/facebook/scripts/prepareconfig ]; then
         echo "Generating facebook config"
         env --chdir=kernel facebook/scripts/prepareconfig x86_64 || \
-        env --chdir=kernel facebook/scripts/prepareconfig -a x86_64 -f default -p kernel/facebook/config > .config
+        env --chdir=kernel facebook/scripts/prepareconfig -a x86_64 -f default -p facebook/config > kernel/.config
         mv kernel/.config generated.kernel.config
         CONFIG="generated.kernel.config"
         # Speed up incremental builds by disabling CONFIG_LOCALVERSION_AUTO.
@@ -52,7 +52,7 @@ if [ -z "$CONFIG" ]; then
     fi
 
     if [ -f "kernel/facebook/scripts/bootconfig" ]; then
-        env --chdir=kernel facebook/scripts/bootconfig -a "x86_64" -f default -p kernel/facebook/config > generated.boot.config
+        env --chdir=kernel facebook/scripts/bootconfig -a "x86_64" -f default -p facebook/config > generated.boot.config
     fi
 fi
 
