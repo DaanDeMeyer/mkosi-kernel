@@ -37,8 +37,8 @@ done
 if [ -z "$CONFIG" ]; then
     if [ -f kernel/facebook/scripts/prepareconfig ]; then
         echo "Generating facebook config"
-        kernel/facebook/scripts/prepareconfig x86_64 || \
-        kernel/facebook/scripts/prepareconfig -a x86_64 -f default -p kernel/facebook/config > generated.kernel.config
+        env --chdir=kernel facebook/scripts/prepareconfig x86_64 || \
+        env --chdir=kernel facebook/scripts/prepareconfig -a x86_64 -f default -p kernel/facebook/config > generated.kernel.config
         CONFIG="generated.kernel.config"
     elif [ -f kernel/mkosi.kernel.config ]; then
         CONFIG=kernel/mkosi.kernel.config
@@ -49,7 +49,7 @@ if [ -z "$CONFIG" ]; then
     fi
 
     if [ -f "kernel/facebook/scripts/bootconfig" ]; then
-        kernel/facebook/scripts/bootconfig -a "x86_64" -f default -p kernel/facebook/config > generated.boot.config
+        env --chdir=kernel facebook/scripts/bootconfig -a "x86_64" -f default -p kernel/facebook/config > generated.boot.config
     fi
 fi
 
