@@ -45,7 +45,7 @@ collect_files()
 cd kernel/
 
 FILE_LOCALVERSION="$(collect_files localversion*)"
-CONFIG_LOCALVERSION=$(sed -n 's/^CONFIG_LOCALVERSION=\(.*\)$/\1/p' "$SRCDIR/$CONFIG")
+CONFIG_LOCALVERSION=$(sed -n 's/^CONFIG_LOCALVERSION="?\(.*\)"?$/\1/p' "$SRCDIR/$CONFIG" | cut -d '"' -f2)
 
 # If LOCALVERSION is not set, kbuild will do a very expensive git describe
 # command to determine a git version suffix to append to the kernel version, so
