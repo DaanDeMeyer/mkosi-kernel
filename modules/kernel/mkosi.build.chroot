@@ -41,6 +41,8 @@ if [ -z "$CONFIG" ]; then
         env --chdir=kernel facebook/scripts/prepareconfig -a x86_64 -f default -p kernel/facebook/config > .config
         mv kernel/.config generated.kernel.config
         CONFIG="generated.kernel.config"
+        # Speed up incremental builds by disabling CONFIG_LOCALVERSION_AUTO.
+        sed -i 's/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/' "$CONFIG"
     elif [ -f kernel/mkosi.kernel.config ]; then
         CONFIG=kernel/mkosi.kernel.config
     elif [ -f "mkosi.kernel.$ARCHITECTURE.config" ]; then
