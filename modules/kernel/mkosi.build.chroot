@@ -38,7 +38,8 @@ if [ -z "$CONFIG" ]; then
     if [ -f kernel/facebook/scripts/prepareconfig ]; then
         echo "Generating facebook config"
         env --chdir=kernel facebook/scripts/prepareconfig x86_64 || \
-        env --chdir=kernel facebook/scripts/prepareconfig -a x86_64 -f default -p kernel/facebook/config > generated.kernel.config
+        env --chdir=kernel facebook/scripts/prepareconfig -a x86_64 -f default -p kernel/facebook/config > .config
+        mv .config generated.kernel.config
         CONFIG="generated.kernel.config"
     elif [ -f kernel/mkosi.kernel.config ]; then
         CONFIG=kernel/mkosi.kernel.config
