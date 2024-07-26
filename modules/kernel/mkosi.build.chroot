@@ -34,19 +34,26 @@ while true; do
     esac
 done
 
+if [[ "$ARCHITECTURE" == "x86-64" ]]; then
+    KERNEL_ARCHITECTURE="x86_64"
+elif [[ "$ARCHITECTURE" == "arm64" ]]; then
+    KERNEL_ARCHITECTURE="arm64"
+else
+    echo "Architecture $ARCHITECTURE is not supported" >&2
+    exit 1
+fi
+
 if [ -z "$CONFIG" ]; then
     if [ -f kernel/facebook/scripts/prepareconfig ]; then
         echo "Generating facebook config"
-        env --chdir=kernel facebook/scripts/prepareconfig x86_64 || \
-        env --chdir=kernel facebook/scripts/prepareconfig -a x86_64 -f default -p facebook/config > kernel/.config
+        env --chdir=kernel facebook/scripts/prepareconfig "$KERNEL_ARCHITECTURE" || \
+        env --chdir=kernel facebook/scripts/prepareconfig -a "$KERNEL_ARCHITECTURE" -f default -p facebook/config > kernel/.config
         mv kernel/.config generated.kernel.config
         CONFIG="generated.kernel.config"
         # Speed up incremental builds by disabling CONFIG_LOCALVERSION_AUTO.
         sed -i 's/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/' "$CONFIG"
     elif [ -f kernel/mkosi.kernel.config ]; then
         CONFIG=kernel/mkosi.kernel.config
-    elif [ -f "mkosi.kernel.$ARCHITECTURE.config" ]; then
-        CONFIG="mkosi.kernel.$ARCHITECTURE.config"
     else
         CONFIG=mkosi.kernel.config
     fi
