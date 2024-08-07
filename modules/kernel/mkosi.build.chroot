@@ -47,6 +47,10 @@ cd kernel/
 FILE_LOCALVERSION="$(collect_files localversion*)"
 CONFIG_LOCALVERSION=$(sed -n 's/^CONFIG_LOCALVERSION="?\(.*\)"?$/\1/p' "$SRCDIR/$CONFIG" | cut -d '"' -f2)
 
+if [[ -z "$LOCALVERSION" ]] && [[ -d .git/ ]]; then
+    LOCALVERSION="$(git rev-parse --short=11 HEAD)"
+fi
+
 # If LOCALVERSION is not set, kbuild will do a very expensive git describe
 # command to determine a git version suffix to append to the kernel version, so
 # let's make sure it is set to the empty string if not set explicitly to avoid
