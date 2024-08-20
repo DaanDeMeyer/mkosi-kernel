@@ -10,10 +10,16 @@ fi
 
 ((INCREMENTAL)) && ! ((BTRFS_PROGS)) && exit 0
 
-cp --archive --update --reflink=auto btrfs-progs "$BUILDDIR"
-cd "$BUILDDIR/btrfs-progs"
-
 ln -sf /usr/bin/python3 /usr/bin/python
+
+cd btrfs-progs
+
+# Out-of-tree builds are not supported, so we write the build directory key to the source tree
+# so we know when to run make clean.
+if ! [[ -f mkosi.id ]] || [[ "$DISTRIBUTION~$RELEASE~$ARCHITECTURE" != "$(cat mkosi.id)" ]] ; then
+    make clean
+    echo "$DISTRIBUTION~$RELEASE~$ARCHITECTURE" >mkosi.id
+fi
 
 if [ ! -f ./configure ]; then
     ./autogen.sh

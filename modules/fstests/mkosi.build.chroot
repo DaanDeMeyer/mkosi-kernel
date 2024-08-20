@@ -10,8 +10,14 @@ fi
 
 ((INCREMENTAL)) && ! ((FSTESTS)) && exit 0
 
-cp --archive --update --reflink=auto fstests "$BUILDDIR"
-cd "$BUILDDIR/fstests"
+cd fstests/
+
+# Out-of-tree builds are not supported, so we write the build directory key to the source tree
+# so we know when to run make clean.
+if ! [[ -f mkosi.id ]] || [[ "$DISTRIBUTION~$RELEASE~$ARCHITECTURE" != "$(cat mkosi.id)" ]] ; then
+    make clean
+    echo "$DISTRIBUTION~$RELEASE~$ARCHITECTURE" >mkosi.id
+fi
 
 make -j "$(nproc)"
 
