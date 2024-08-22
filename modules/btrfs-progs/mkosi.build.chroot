@@ -12,14 +12,9 @@ fi
 
 ln -sf /usr/bin/python3 /usr/bin/python
 
-cd btrfs-progs
-
-# Out-of-tree builds are not supported, so we write the build directory key to the source tree
-# so we know when to run make clean.
-if ! [[ -f mkosi.id ]] || [[ "$DISTRIBUTION~$RELEASE~$ARCHITECTURE" != "$(cat mkosi.id)" ]] ; then
-    make clean
-    echo "$DISTRIBUTION~$RELEASE~$ARCHITECTURE" >mkosi.id
-fi
+mkdir -p "$BUILDDIR/btrfs-progs" "$BUILDDIR/workdir/btrfs-progs"
+mount -t overlay overlay -o "lowerdir=$SRCDIR/btrfs-progs,upperdir=$BUILDDIR/btrfs-progs,workdir=$BUILDDIR/workdir/btrfs-progs" "$SRCDIR/btrfs-progs"
+cd "$SRCDIR/btrfs-progs"
 
 if [ ! -f ./configure ]; then
     ./autogen.sh

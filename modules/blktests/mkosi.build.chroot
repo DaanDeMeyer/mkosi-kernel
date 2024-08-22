@@ -10,14 +10,9 @@ fi
 
 ((INCREMENTAL)) && ! ((BLKTESTS)) && exit 0
 
-cd blktests
-
-# Out-of-tree builds are not supported, so we write the build directory key to the source tree
-# so we know when to run make clean.
-if ! [[ -f mkosi.id ]] || [[ "$DISTRIBUTION~$RELEASE~$ARCHITECTURE" != "$(cat mkosi.id)" ]] ; then
-    make clean
-    echo "$DISTRIBUTION~$RELEASE~$ARCHITECTURE" >mkosi.id
-fi
+mkdir -p "$BUILDDIR/blktests" "$BUILDDIR/workdir/blktests"
+mount -t overlay overlay -o "lowerdir=$SRCDIR/blktests,upperdir=$BUILDDIR/blktests,workdir=$BUILDDIR/workdir/blktests" "$SRCDIR/blktests"
+cd "$SRCDIR/blktests"
 
 make -j "$(nproc)"
 ! ((INCREMENTAL)) && make install
