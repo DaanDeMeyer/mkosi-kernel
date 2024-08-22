@@ -10,15 +10,22 @@ fi
 
 ((INCREMENTAL)) && ! ((FSTESTS)) && exit 0
 
-cd fstests/
-
-# Out-of-tree builds are not supported, so we write the build directory key to the source tree
-# so we know when to run make clean.
-if ! [[ -f mkosi.id ]] || [[ "$DISTRIBUTION~$RELEASE~$ARCHITECTURE" != "$(cat mkosi.id)" ]] ; then
-    make clean
-    echo "$DISTRIBUTION~$RELEASE~$ARCHITECTURE" >mkosi.id
-fi
+mkdir -p "$BUILDDIR/fstests" "$BUILDDIR/workdir/fstests"
+mount \
+    overlay \
+    "$SRCDIR/fstests" \
+    -t overlay \
+    -o "lowerdir=$SRCDIR/fstests,upperdir=$BUILDDIR/fstests,workdir=$BUILDDIR/workdir/fstests,userxattr"
+cd "$SRCDIR/fstests"
 
 make -j "$(nproc)"
+
+((INCREMENTAL)) && exit 0
+
+# make install with DESTDIR is completely broken in fstests, so let's hack around it and bind mount the
+# location we want to the files to get installed to to /var/lib/xfstests.
+mkdir -p /work/dest/var/lib/xfstests
+mount --bind --mkdir /work/dest/var/lib/xfstests /var/lib/xfstests
+DESTDIR= make install
 
 exit 0
