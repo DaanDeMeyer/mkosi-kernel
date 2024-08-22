@@ -13,6 +13,7 @@ TEMP=$( \
     --long 'ltp' \
     --long 'bpfilter' \
     --long 'bpftrace' \
+    --long 'fio' \
     -n 'mkosi.build' \
     -- "$@" \
 )
@@ -62,6 +63,11 @@ while true; do
             shift 1
             continue
         ;;
+        '--fio')
+            FIO=1
+            shift 1
+            continue
+        ;;
         '--')
             shift
             break
@@ -81,4 +87,5 @@ LTP=$LTP
 BTRFS_PROGS=$BTRFS_PROGS
 BPFILTER=$BPFILTER
 BPFTRACE=$BPFTRACE
+FIO=$FIO
 EOF

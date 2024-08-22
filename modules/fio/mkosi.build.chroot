@@ -1,0 +1,31 @@
+#!/bin/bash
+# SPDX-License-Identifier: LGPL-2.1-or-later
+set -e
+
+if [ ! -f fio/Makefile ]; then
+    exit 0
+fi
+
+. "$ARTIFACTDIR"/env
+
+((INCREMENTAL)) && ! ((FIO)) && exit 0
+
+mkdir -p "$BUILDDIR/fio" "$BUILDDIR/workdir/fio"
+mount \
+    overlay \
+    "$SRCDIR/fio" \
+    -t overlay \
+    -o "lowerdir=$SRCDIR/fio,upperdir=$BUILDDIR/fio,workdir=$BUILDDIR/workdir/fio,userxattr"
+cd "$SRCDIR/fio"
+
+# fio's Makefile picks up $SRCDIR from the environment so explicitly unset it.
+unset SRCDIR
+
+if ! [[ -f config-host.mak ]]; then
+    ./configure --prefix=/usr
+fi
+
+make -j "$(nproc)"
+! ((INCREMENTAL)) && make install
+
+exit 0
