@@ -11,7 +11,11 @@ fi
 ((INCREMENTAL)) && ! ((BLKTESTS)) && exit 0
 
 mkdir -p "$BUILDDIR/blktests" "$BUILDDIR/workdir/blktests"
-mount -t overlay overlay -o "lowerdir=$SRCDIR/blktests,upperdir=$BUILDDIR/blktests,workdir=$BUILDDIR/workdir/blktests" "$SRCDIR/blktests"
+mount \
+    overlay \
+    "$SRCDIR/blktests" \
+    -t overlay \
+    -o "lowerdir=$SRCDIR/blktests,upperdir=$BUILDDIR/blktests,workdir=$BUILDDIR/workdir/blktests,userxattr"
 cd "$SRCDIR/blktests"
 
 make -j "$(nproc)"

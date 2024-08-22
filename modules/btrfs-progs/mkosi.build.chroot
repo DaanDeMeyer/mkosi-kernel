@@ -13,7 +13,11 @@ fi
 ln -sf /usr/bin/python3 /usr/bin/python
 
 mkdir -p "$BUILDDIR/btrfs-progs" "$BUILDDIR/workdir/btrfs-progs"
-mount -t overlay overlay -o "lowerdir=$SRCDIR/btrfs-progs,upperdir=$BUILDDIR/btrfs-progs,workdir=$BUILDDIR/workdir/btrfs-progs" "$SRCDIR/btrfs-progs"
+mount \
+    overlay \
+    "$SRCDIR/btrfs-progs" \
+    -t overlay \
+    -o "lowerdir=$SRCDIR/btrfs-progs,upperdir=$BUILDDIR/btrfs-progs,workdir=$BUILDDIR/workdir/btrfs-progs,userxattr"
 cd "$SRCDIR/btrfs-progs"
 
 if [ ! -f ./configure ]; then
