@@ -24,8 +24,8 @@ make -j "$(nproc)"
 
 # make install with DESTDIR is completely broken in fstests, so let's hack around it and bind mount the
 # location we want to the files to get installed to to /var/lib/xfstests.
-mkdir -p /work/dest/var/lib/xfstests
-mount --bind --mkdir /work/dest/var/lib/xfstests /var/lib/xfstests
+mkdir -p /work/dest/var/lib/xfstests /var/lib/xfstests
+mount --bind /work/dest/var/lib/xfstests /var/lib/xfstests
 DESTDIR= make install
 
 exit 0
