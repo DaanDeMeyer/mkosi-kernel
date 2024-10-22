@@ -6,3 +6,7 @@ mkosi.builddir/
 mkosi.local.conf
 mkosi.crt
 mkosi.key
+
+# Ignore Python venvs for local installation of mkosi
+.venv
+venv
