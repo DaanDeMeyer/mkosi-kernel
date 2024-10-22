@@ -25,11 +25,14 @@ type `quit` to exit the VM. Alternatively, run `systemctl poweroff`.
 To build your own kernel, add the following to `mkosi.conf`:
 
 ```conf
-[Config]
-Include=modules/kernel
-
-[Content]
+# If you use mkosi-kernel from another directory
+# you must set the BuildSources= for the kernel source
+# before including mkosi-kernel.
+[Build]
 BuildSources=<path-to-your-kernel-sources>:kernel
+
+[Include]
+Include=modules/kernel
 ```
 
 If you want to mount a directory into the qemu VM, you can add the following:
@@ -61,10 +64,10 @@ Various other modules are supported as well. For example, to use the btrfs-progs
 module to bulid and install btrfs-progs:
 
 ```conf
-[Config]
+[Include]
 Include=modules/btrfs-progs
 
-[Content]
+[Build]
 BuildSources=<path-to-your-btrfs-progs-sources>:btrfs-progs
 ```
 
@@ -74,11 +77,11 @@ The same applies to the other modules (`fstests`, `ltp`, `blktests`,
 To enable multiple modules, you can do the following:
 
 ```conf
-[Config]
+[Include]
 Include=modules/btrfs-progs
         modules/kernel
 
-[Content]
+[Build]
 BuildSources=<path-to-your-btrfs-progs-sources>:btrfs-progs
              <path-to-your-kernel-sources>:kernel
 ```
