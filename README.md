@@ -25,10 +25,10 @@ type `quit` to exit the VM. Alternatively, run `systemctl poweroff`.
 To build your own kernel, add the following to `mkosi.conf`:
 
 ```conf
-[Config]
+[Include]
 Include=modules/kernel
 
-[Content]
+[Build]
 BuildSources=<path-to-your-kernel-sources>:kernel
 ```
 
@@ -61,10 +61,10 @@ Various other modules are supported as well. For example, to use the btrfs-progs
 module to bulid and install btrfs-progs:
 
 ```conf
-[Config]
+[Include]
 Include=modules/btrfs-progs
 
-[Content]
+[Build]
 BuildSources=<path-to-your-btrfs-progs-sources>:btrfs-progs
 ```
 
@@ -74,11 +74,11 @@ The same applies to the other modules (`fstests`, `ltp`, `blktests`,
 To enable multiple modules, you can do the following:
 
 ```conf
-[Config]
+[Include]
 Include=modules/btrfs-progs
         modules/kernel
 
-[Content]
+[Build]
 BuildSources=<path-to-your-btrfs-progs-sources>:btrfs-progs
              <path-to-your-kernel-sources>:kernel
 ```
