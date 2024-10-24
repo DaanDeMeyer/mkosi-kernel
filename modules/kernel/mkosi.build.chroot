@@ -52,6 +52,8 @@ if [ -z "$CONFIG" ]; then
         CONFIG="generated.kernel.config"
         # Speed up incremental builds by disabling CONFIG_LOCALVERSION_AUTO.
         sed -i 's/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/' "$CONFIG"
+	# Enable mkosi ssh on internal builds
+        sed -i 's/# CONFIG_VIRTIO_VSOCKETS is not set/CONFIG_VIRTIO_VSOCKETS=y/' "$CONFIG"
     elif [ -f kernel/mkosi.kernel.config ]; then
         CONFIG=kernel/mkosi.kernel.config
     else
