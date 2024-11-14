@@ -54,6 +54,8 @@ if [ -z "$CONFIG" ]; then
         sed -i 's/CONFIG_LOCALVERSION_AUTO=y/# CONFIG_LOCALVERSION_AUTO is not set/' "$CONFIG"
 	# Enable mkosi ssh on internal builds
         sed -i 's/# CONFIG_VIRTIO_VSOCKETS is not set/CONFIG_VIRTIO_VSOCKETS=y/' "$CONFIG"
+	# Enable REF_VERIFY
+        sed -i 's/# CONFIG_BTRFS_FS_REF_VERIFY is not set/CONFIG_BTRFS_FS_REF_VERIFY=y/' "$CONFIG"
     elif [ -f kernel/mkosi.kernel.config ]; then
         CONFIG=kernel/mkosi.kernel.config
     else
