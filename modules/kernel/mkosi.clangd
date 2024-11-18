@@ -1,0 +1,39 @@
+#!/bin/bash
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
+set -eu
+
+if [ -z "${MKOSI_CONFIG-}" ]; then
+    exec mkosi \
+        --incremental=strict \
+        --build-sources-ephemeral=no \
+        --format=none \
+        --build-script= \
+        --build-script="$(realpath "$0")" \
+        build
+fi
+
+DISTRIBUTION="$(jq -r .Distribution "$MKOSI_CONFIG")"
+RELEASE="$(jq -r .Release "$MKOSI_CONFIG")"
+ARCH="$(jq -r .Architecture "$MKOSI_CONFIG")"
+
+BUILD_DIRECTORY="$(jq -r .BuildDirectory "$MKOSI_CONFIG")"
+CACHE_DIRECTORY="$(jq -r .CacheDirectory "$MKOSI_CONFIG")"
+# This neglects build sources which have an absolute path as a target
+# but that would make the jq filter more complex
+# and can still added later if someone has a need for this.
+BUILD_SOURCE_MAPPINGS="$(jq -r '[
+    .BuildSources[]
+    | .Source + "/='"$SRCDIR"'/" + .Target
+] | join(",")' "$MKOSI_CONFIG")"
+
+# This currently puts the clang-format on the host :/
+# And also DOES NOT WORK... :|
+cp kernel/.clang-format $SRCDIR
+exec clangd \
+    --compile-commands-dir="$BUILDDIR" \
+    --path-mappings="\
+$BUILD_SOURCE_MAPPINGS,\
+$BUILD_DIRECTORY/=$BUILDDIR/,\
+$CACHE_DIRECTORY/$DISTRIBUTION~$RELEASE~$ARCH.cache/usr/include/=$BUILDROOT/usr/include/" \
+    "$@"

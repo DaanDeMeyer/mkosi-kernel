@@ -87,6 +87,12 @@ export KBUILD_BUILD_USER="mkosi"
 
 make $EXTRA -j "$(nproc)" $( ((INCREMENTAL)) && echo modules)
 
+# We put the compile_commands.json in /work/build
+# because we do not have access to the kernel-specific build directory when starting clangd.
+# Also we have to hardcode /work/build as the target because the original BUILDDIR
+# variable has been reassigned.
+scripts/clang-tools/gen_compile_commands.py -d "$BUILDDIR" -o /work/build/compile_commands.json
+
 # FIXME: Re-enable when coreutils 9.5 gets into debian testing.
 . /usr/lib/os-release
 if ! ((INCREMENTAL)) && [ ! "$ID" = "debian" ]; then
