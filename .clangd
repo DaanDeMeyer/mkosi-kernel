@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
+CompileFlags:
+  Add: -Wno-unknown-warning-option
+  Remove: [--hack*, --ibt,--orc,--retpoline,--rethunk,--sls,--static-call,--uaccess,--link,--module,-mpreferred-stack*,-mindirect-branch*,-fno-allow-store*,-fconserve-stack,-mrecord-mcount,-ftrivial-auto*,-fmin-function-alignment=16]
