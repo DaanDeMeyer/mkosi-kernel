@@ -1,9 +1,10 @@
 #!/bin/bash
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
-set -eu
+set -eux
 
 if [ -z "${MKOSI_CONFIG-}" ]; then
+    # shellcheck disable=SC2093 # exec not last command
     exec mkosi \
         --incremental=strict \
         --build-sources-ephemeral=no \
@@ -11,7 +12,38 @@ if [ -z "${MKOSI_CONFIG-}" ]; then
         --build-script= \
         --build-script="$(realpath "$0")" \
         build
+        "$@"
 fi
+
+if [ -z "${CONFIG-}" ]; then
+    if [ -f kernel/mkosi.kernel.config ]; then
+        CONFIG=kernel/mkosi.kernel.config
+    else
+        CONFIG=mkosi.kernel.config
+    fi
+fi
+
+collect_files()
+{
+    local file res=
+
+    for file; do
+        case "$file" in
+        *\~*)
+            continue
+            ;;
+        esac
+        if test -e "$file"; then
+            res="$res$(cat "$file")"
+        fi
+    done
+    echo "$res"
+}
+
+FILE_LOCALVERSION="$(collect_files kernel/localversion*)"
+CONFIG_LOCALVERSION=$(sed -n 's/^CONFIG_LOCALVERSION="?\(.*\)"?$/\1/p' "$SRCDIR/$CONFIG" | cut -d '"' -f2)
+
+BUILDDIR="$BUILDDIR/kernel/${FILE_LOCALVERSION}${CONFIG_LOCALVERSION}${LOCALVERSION:-""}"
 
 DISTRIBUTION="$(jq -r .Distribution "$MKOSI_CONFIG")"
 RELEASE="$(jq -r .Release "$MKOSI_CONFIG")"
@@ -27,9 +59,13 @@ BUILD_SOURCE_MAPPINGS="$(jq -r '[
     | .Source + "/='"$SRCDIR"'/" + .Target
 ] | join(",")' "$MKOSI_CONFIG")"
 
-# This currently puts the clang-format on the host :/
-# And also DOES NOT WORK... :|
-cp kernel/.clang-format $SRCDIR
+# clangd searches the directory upwards for a .clang-format file
+# but path-mappings are not respected for this procedure.
+# So the filenames supplied by the LSP client are using host paths
+# which do not exist inside the build sandbox.
+# To work around this, we copy the .clang-format file to the root
+# such that clangd uses it as a fallback.
+cp .clang-format /
 exec clangd \
     --compile-commands-dir="$BUILDDIR" \
     --path-mappings="\
