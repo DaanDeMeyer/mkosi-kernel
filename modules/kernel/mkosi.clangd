@@ -65,8 +65,14 @@ BUILD_SOURCE_MAPPINGS="$(jq -r '[
 # which do not exist inside the build sandbox.
 # To work around this, we copy the .clang-format file to the root
 # such that clangd uses it as a fallback.
-cp .clang-format /
+cp kernel/.clang-format /
+cat > /.clangd <<EOF
+CompileFlags:
+  Add: -Wno-unknown-warning-option
+  Remove: [--hack*, --ibt,--orc,--retpoline,--rethunk,--sls,--static-call,--uaccess,--link,--module,-mpreferred-stack*,-mindirect-branch*,-fno-allow-store*,-fconserve-stack,-mrecord-mcount,-ftrivial-auto*]
+EOF
 exec clangd \
+    --enable-config \
     --compile-commands-dir="$BUILDDIR" \
     --path-mappings="\
 $BUILD_SOURCE_MAPPINGS,\
