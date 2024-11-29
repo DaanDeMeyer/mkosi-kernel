@@ -8,7 +8,7 @@ To get started, write the distribution you want to build to `mkosi.local.conf`
 in the root of the repository in the Distribution section. Currently CentOS,
 Fedora and Debian are supported. For example, for fedora, write the following:
 
-```conf
+```ini
 [Distribution]
 Distribution=fedora
 ```
@@ -24,7 +24,7 @@ type `quit` to exit the VM. Alternatively, run `systemctl poweroff`.
 
 To build your own kernel, add the following to `mkosi.conf`:
 
-```conf
+```ini
 # If you use mkosi-kernel from another directory
 # you must set the BuildSources= for the kernel source
 # before including mkosi-kernel.
@@ -37,7 +37,7 @@ Include=modules/kernel
 
 If you want to mount a directory into the qemu VM, you can add the following:
 
-```conf
+```ini
 [Host]
 RuntimeTrees=<path-to-sources>:/path/in/guest
 ```
@@ -63,7 +63,7 @@ environment variable.
 Various other modules are supported as well. For example, to use the btrfs-progs
 module to bulid and install btrfs-progs:
 
-```conf
+```ini
 [Include]
 Include=modules/btrfs-progs
 
@@ -76,7 +76,7 @@ The same applies to the other modules (`fstests`, `ltp`, `blktests`,
 
 To enable multiple modules, you can do the following:
 
-```conf
+```ini
 [Include]
 Include=modules/btrfs-progs
         modules/kernel
@@ -112,7 +112,7 @@ To make use of this, we'll need to make sure the source and build directories
 of each module are mounted into the virtual machine by adding the following to
 our mkosi.local.conf:
 
-```conf
+```ini
 [Host]
 RuntimeBuildSources=yes
 ```
@@ -143,7 +143,7 @@ mkosi builds a disk image by creating a directory `mkosi.repart` in the
 mkosi-kernel repository and writing a file `00-root.conf` in there with the
 following contents:
 
-```conf
+```ini
 [Partition]
 Type=root
 Format=<filesystem>
@@ -157,7 +157,7 @@ SizeMaxBytes=8G
 With a few configuration changes, the kernel booted in an mkosi-kernel VM
 can be debugged with gdb. On the mkosi side, this config option is needed
 in order to have qemu listen for gdb, by default on localhost tcp port 1234:
-```conf
+```ini
 [Host]
 QemuArgs=-s
 ```
