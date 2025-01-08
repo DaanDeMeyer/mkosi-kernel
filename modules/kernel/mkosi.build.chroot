@@ -87,6 +87,8 @@ export KBUILD_BUILD_USER="mkosi"
 
 make $EXTRA -j "$(nproc)" $( ((INCREMENTAL)) && echo modules)
 
+scripts/clang-tools/gen_compile_commands.py -d "$BUILDDIR" -o "$BUILDDIR"/compile_commands.json
+
 # FIXME: Re-enable when coreutils 9.5 gets into debian testing.
 . /usr/lib/os-release
 if ! ((INCREMENTAL)) && [ ! "$ID" = "debian" ]; then
