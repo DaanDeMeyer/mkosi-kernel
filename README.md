@@ -8,7 +8,7 @@ To get started, write the distribution you want to build to `mkosi.local.conf`
 in the root of the repository in the Distribution section. Currently CentOS,
 Fedora and Debian are supported. For example, for fedora, write the following:
 
-```conf
+```ini
 [Distribution]
 Distribution=fedora
 ```
@@ -24,18 +24,21 @@ type `quit` to exit the VM. Alternatively, run `systemctl poweroff`.
 
 To build your own kernel, add the following to `mkosi.conf`:
 
-```conf
-[Config]
-Include=modules/kernel
-
-[Content]
+```ini
+# If you use mkosi-kernel from another directory
+# you must set the BuildSources= for the kernel source
+# before including mkosi-kernel.
+[Build]
 BuildSources=<path-to-your-kernel-sources>:kernel
+
+[Include]
+Include=modules/kernel
 ```
 
 If you want to mount a directory into the qemu VM, you can add the following:
 
-```conf
-[Host]
+```ini
+[Runtime]
 RuntimeTrees=<path-to-sources>:/path/in/guest
 ```
 
@@ -60,11 +63,11 @@ environment variable.
 Various other modules are supported as well. For example, to use the btrfs-progs
 module to bulid and install btrfs-progs:
 
-```conf
-[Config]
+```ini
+[Include]
 Include=modules/btrfs-progs
 
-[Content]
+[Build]
 BuildSources=<path-to-your-btrfs-progs-sources>:btrfs-progs
 ```
 
@@ -73,12 +76,12 @@ The same applies to the other modules (`fstests`, `ltp`, `blktests`,
 
 To enable multiple modules, you can do the following:
 
-```conf
-[Config]
+```ini
+[Include]
 Include=modules/btrfs-progs
         modules/kernel
 
-[Content]
+[Build]
 BuildSources=<path-to-your-btrfs-progs-sources>:btrfs-progs
              <path-to-your-kernel-sources>:kernel
 ```
@@ -91,9 +94,8 @@ the relevant `BuildSources=` entry without disabling the module itself.
 This configuration will download the required tools to build and boot the image
 on the fly. To use this configuration, the following tools have to be installed:
 
-- mkosi v24 (development version from git)
+- mkosi v25
 - python 3.9 (Set `$MKOSI_INTERPRETER` to point to an alternative interpreter)
-- bubblewrap
 - package manager of the distribution you're building
 - coreutils
 - util-linux
@@ -109,8 +111,8 @@ To make use of this, we'll need to make sure the source and build directories
 of each module are mounted into the virtual machine by adding the following to
 our mkosi.local.conf:
 
-```conf
-[Host]
+```ini
+[Runtime]
 RuntimeBuildSources=yes
 ```
 
@@ -140,7 +142,7 @@ mkosi builds a disk image by creating a directory `mkosi.repart` in the
 mkosi-kernel repository and writing a file `00-root.conf` in there with the
 following contents:
 
-```conf
+```ini
 [Partition]
 Type=root
 Format=<filesystem>
@@ -154,8 +156,9 @@ SizeMaxBytes=8G
 With a few configuration changes, the kernel booted in an mkosi-kernel VM
 can be debugged with gdb. On the mkosi side, this config option is needed
 in order to have qemu listen for gdb, by default on localhost tcp port 1234:
-```conf
-[Host]
+
+```ini
+[Runtime]
 QemuArgs=-s
 ```
 
