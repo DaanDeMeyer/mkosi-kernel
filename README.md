@@ -25,14 +25,11 @@ type `quit` to exit the VM. Alternatively, run `systemctl poweroff`.
 To build your own kernel, add the following to `mkosi.conf`:
 
 ```ini
-# If you use mkosi-kernel from another directory
-# you must set the BuildSources= for the kernel source
-# before including mkosi-kernel.
+[Config]
+Profiles=kernel
+
 [Build]
 BuildSources=<path-to-your-kernel-sources>:kernel
-
-[Include]
-Include=modules/kernel
 ```
 
 If you want to mount a directory into the qemu VM, you can add the following:
@@ -60,34 +57,33 @@ the localversion files in the given kernel source tree and the
 `CONFIG_LOCALVERSION` setting in the configuration and the `$LOCALVERSION`
 environment variable.
 
-Various other modules are supported as well. For example, to use the btrfs-progs
-module to bulid and install btrfs-progs:
+Various other profiles are supported as well. For example, to use the btrfs-progs
+profile to build and install btrfs-progs:
 
 ```ini
-[Include]
-Include=modules/btrfs-progs
+[Config]
+Profiles=btrfs-progs
 
 [Build]
 BuildSources=<path-to-your-btrfs-progs-sources>:btrfs-progs
 ```
 
-The same applies to the other modules (`fstests`, `ltp`, `blktests`,
+The same applies to the other profiles (`fstests`, `ltp`, `blktests`,
 `bpfilter`).
 
-To enable multiple modules, you can do the following:
+To enable multiple profiles, you can do the following:
 
 ```ini
-[Include]
-Include=modules/btrfs-progs
-        modules/kernel
+[Config]
+Profiles=btrfs-progs,kernel
 
 [Build]
 BuildSources=<path-to-your-btrfs-progs-sources>:btrfs-progs
              <path-to-your-kernel-sources>:kernel
 ```
 
-To temporarily disable building a specific module, you can simply comment out
-the relevant `BuildSources=` entry without disabling the module itself.
+To temporarily disable building a specific profile, you can simply comment out
+the relevant `BuildSources=` entry without disabling the profile itself.
 
 ## Requirements
 
@@ -102,13 +98,13 @@ on the fly. To use this configuration, the following tools have to be installed:
 
 ## Incremental builds
 
-To avoid having to rebuild the image for every change made to a module,
+To avoid having to rebuild the image for every change made to a profile,
 mkosi-kernel supports incremental builds that allows for rebuilding projects
 and making the changes available in the image without rebuilding the image
 itself. Using this mode requires mkosi version `24~devel` or newer.
 
 To make use of this, we'll need to make sure the source and build directories
-of each module are mounted into the virtual machine by adding the following to
+of each profile are mounted into the virtual machine by adding the following to
 our mkosi.local.conf:
 
 ```ini
@@ -117,19 +113,19 @@ RuntimeBuildSources=yes
 ```
 
 Next, build and boot the image with `mkosi -f qemu`. In the virtual machine, the
-sources of each enabled module can be accessed at `/work/src` and the build
-directory of each module can be accessed at `/work/build`. Additionally, the
+sources of each enabled profile can be accessed at `/work/src` and the build
+directory of each profile can be accessed at `/work/build`. Additionally, the
 kernel modules are automatically bind mounted from `/work/build/kernel/modules`
 to `/usr/lib/modules` if that directory is available.
 
-To rebuild each module without rebuilding the image, open another terminal on
+To rebuild each profile without rebuilding the image, open another terminal on
 the host and run `mkosi -t none build -i`. This will rebuild each enabled
-module. To select which modules to rebuild, simply pass the name of the module
+profile. To select which profiles to rebuild, simply pass the name of the profile
 as an option. For example, run `mkosi -t none build -i --btrfs-progs` to only
-rebuild the btrfs-progs module. After the command finishes, the changes will be
+rebuild the btrfs-progs profile. After the command finishes, the changes will be
 available in `/work/build` in the virtual machine.
 
-Note that for the kernel module, only modules are rebuilt, so this approach does
+Note that for the kernel profile, only modules are rebuilt, so this approach does
 not work if the corresponding code in the kernel cannot be compiled as a module.
 
 To reload a kernel module after doing a incremental build, run `rmmod <module>`
