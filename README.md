@@ -182,6 +182,40 @@ each CPU is doing, and then getting a backtrace from each CPU:
 Repeat for each interesting looking CPU, and then dig into the details
 as needed.
 
+## Building with latest kernel and latest systemd
+
+To build mkosi-kernel with the latest systemd straight from git, first
+we need to build systemd rpms from the source repository:
+
+```sh
+git clone https://github.com/systemd/systemd
+mkosi -t none -f
+ls mkosi.builddir/<distribution>~<release>~<arch>
+```
+
+Then we have to configure mkosi-kernel to pick up the rpms we just built
+(make sure the mkosi distribution and release for mkosi-kernel are the same as
+the mkosi distribution and release in the systemd repository):
+
+```ini
+# mkosi.local.conf
+
+[Config]
+Profiles=kernel
+PackageDirectories=<path-to-systemd-checkout>/build/mkosi.builddir/<distribution>~<release>~<arch>
+
+[Build]
+BuildSources=.
+             <path-to-kernel-checkout>:kernel
+```
+
+Finally, build and boot the mkosi-kernel image to get an image with the latest
+kernel and the latest systemd:
+
+```sh
+mkosi -f qemu
+```
+
 ## Contributing
 
 All package and kconfig lists must be sorted using `sort -u`.
