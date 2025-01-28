@@ -1,0 +1,52 @@
+#!/bin/bash
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
+set -eux
+
+if [ -z "${MKOSI_CONFIG-}" ]; then
+    # shellcheck disable=SC2093 # exec not last command
+    exec mkosi \
+        --incremental=strict \
+        --build-sources-ephemeral=no \
+        --format=none \
+        --build-script= \
+        --build-script="$(realpath "$0")" \
+        build
+        "$@"
+fi
+
+DISTRIBUTION="$(jq -r .Distribution "$MKOSI_CONFIG")"
+RELEASE="$(jq -r .Release "$MKOSI_CONFIG")"
+ARCH="$(jq -r .Architecture "$MKOSI_CONFIG")"
+
+BUILD_DIRECTORY="$(jq -r .BuildDirectory "$MKOSI_CONFIG")"
+CACHE_DIRECTORY="$(jq -r .CacheDirectory "$MKOSI_CONFIG")"
+# This neglects build sources which have an absolute path as a target
+# but that would make the jq filter more complex
+# and can still be added later if someone has a need for this.
+BUILD_SOURCE_MAPPINGS="$(jq -r '[
+    .BuildSources[]
+    | .Source + "/='"$CHROOT_SRCDIR"'/" + .Target
+] | join(",")' "$MKOSI_CONFIG")"
+
+# Clangd searches the directory upwards for a .clang-format file
+# but path-mappings are not respected for this procedure.
+# So the filenames supplied by the LSP client are using host paths
+# which do not exist inside the build sandbox.
+# To work around this, we copy the .clang-format file to the root
+# such that clangd uses it as a fallback.
+cp kernel/.clang-format "$BUILDROOT"/.clang-format
+cat > "$BUILDROOT"/.clangd <<EOF
+CompileFlags:
+  Add: -Wno-unknown-warning-option
+  Remove: [--hack*, --ibt,--orc,--retpoline,--rethunk,--sls,--static-call,--uaccess,--link,--module,-mpreferred-stack*,-mindirect-branch*,-fno-allow-store*,-fconserve-stack,-mrecord-mcount,-ftrivial-auto*]
+EOF
+
+exec mkosi-chroot clangd \
+    --enable-config \
+    --compile-commands-dir="$CHROOT_BUILDDIR/kernel" \
+    --path-mappings="\
+$BUILD_SOURCE_MAPPINGS,\
+$BUILD_DIRECTORY/=$CHROOT_BUILDDIR/,\
+$CACHE_DIRECTORY/$DISTRIBUTION~$RELEASE~$ARCH.cache/usr/include/=/usr/include/" \
+    "$@"
