@@ -64,7 +64,7 @@ if [ -x /sbin/installkernel ]; then
     mount --bind /dev/null /sbin/installkernel
 fi
 
-EXTRA="O=$BUILDDIR V=1"
+EXTRA="O=$BUILDDIR"
 
 if ((LLVM)); then
     EXTRA="$EXTRA LLVM=1"
