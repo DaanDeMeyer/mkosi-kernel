@@ -3,51 +3,50 @@
 
 set -eux
 
+if [[ -z "${MKOSI_CONFIG-}" ]]; then
+    # If there's a mkosi.conf or mkosi.local.conf in the current working
+    # directory, assume that Include=mkosi-kernel is used to include the
+    # mkosi-kernel mkosi configuration. Otherwise, assume the user is
+    # running mkosi directly from the mkosi-kernel repository.
+    if [[ -f mkosi.conf ]] || [[ -f mkosi.local.conf ]]; then
+        DIRECTORY="$PWD"
+    else
+        DIRECTORY="$(dirname "$(realpath "$0")")"
+    fi
+
+    # shellcheck disable=SC2093 # exec not last command
+    exec mkosi \
+        --directory "$DIRECTORY" \
+        --incremental=strict \
+        --build-sources-ephemeral=no \
+        --format=none \
+        --build-script= \
+        --build-script="$(realpath "$0")" \
+        build \
+        -- \
+        "$@"
+fi
+
 PROFILE="$1"
-shift
+shift # shift away profile
 
-if [[ -n "${MKOSI_CONFIG-}" ]]; then
-    exec mkosi-chroot env --chdir="$SRCDIR/$PROFILE" clangd "$@"
-fi
+DISTRIBUTION="$(jq -r .Distribution "$MKOSI_CONFIG")"
+RELEASE="$(jq -r .Release "$MKOSI_CONFIG")"
+ARCH="$(jq -r .Architecture "$MKOSI_CONFIG")"
 
-# If there's a mkosi.conf or mkosi.local.conf in the current working
-# directory, assume that Include=mkosi-kernel is used to include the
-# mkosi-kernel mkosi configuration. Otherwise, assume the user is
-# running mkosi directly from the mkosi-kernel repository.
-if [[ -f mkosi.conf ]] || [[ -f mkosi.local.conf ]]; then
-    DIRECTORY=()
-else
-    DIRECTORY=(--directory "$(dirname "$(realpath "$0")")")
-fi
-
-MKOSI_CONFIG="$(mkosi "${DIRECTORY[@]}" --json summary | jq -r .Images[-1])"
-
-DISTRIBUTION="$(jq -r .Distribution <<< "$MKOSI_CONFIG")"
-RELEASE="$(jq -r .Release <<< "$MKOSI_CONFIG")"
-ARCH="$(jq -r .Architecture <<< "$MKOSI_CONFIG")"
-
-BUILDDIR="$(jq -r .BuildDirectory <<< "$MKOSI_CONFIG")"
-CACHEDIR="$(jq -r .CacheDirectory <<< "$MKOSI_CONFIG")"
+HOST_BUILDDIR="$(jq -r .BuildDirectory "$MKOSI_CONFIG")"
+HOST_CACHEDIR="$(jq -r .CacheDirectory "$MKOSI_CONFIG")"
 
 BUILD_SOURCE_MAPPINGS="$(jq -r '[
     .BuildSources[]
-    | .Source + "/='/work/src'/" + .Target
-] | join(",")' <<< "$MKOSI_CONFIG")"
+    | .Source + "/=/work/src/" + .Target
+] | join(",")' "$MKOSI_CONFIG")"
 
-exec mkosi \
-    "${DIRECTORY[@]}" \
-    --incremental=strict \
-    --build-sources-ephemeral=no \
-    --format=none \
-    --build-script= \
-    --build-script="$(realpath "$0")" \
-    build \
-    -- \
-    "$PROFILE" \
+exec mkosi-chroot env --chdir="$SRCDIR/$PROFILE" clangd \
     --enable-config \
     --compile-commands-dir=/work/build/"$PROFILE" \
     --path-mappings="\
 $BUILD_SOURCE_MAPPINGS,\
-$BUILDDIR=/work/build,\
-$CACHEDIR/$DISTRIBUTION~$RELEASE~$ARCH.cache/usr/include/=/usr/include" \
+$HOST_BUILDDIR=/work/build,\
+$HOST_CACHEDIR/$DISTRIBUTION~$RELEASE~$ARCH.cache/usr/include/=/usr/include" \
     "$@"
