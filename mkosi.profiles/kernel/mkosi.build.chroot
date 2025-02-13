@@ -64,7 +64,7 @@ if [ -x /sbin/installkernel ]; then
     mount --bind /dev/null /sbin/installkernel
 fi
 
-EXTRA="O=$BUILDDIR V=1"
+EXTRA="O=$BUILDDIR"
 
 if ((LLVM)); then
     EXTRA="$EXTRA LLVM=1"
@@ -86,6 +86,11 @@ export KBUILD_BUILD_HOST="mkosi"
 export KBUILD_BUILD_USER="mkosi"
 
 make $EXTRA -j "$(nproc)" $( ((INCREMENTAL)) && echo modules)
+
+if ! ((INCREMENTAL)); then
+    echo "Generating compile-commands database"
+    scripts/clang-tools/gen_compile_commands.py -d "$BUILDDIR" -o "$BUILDDIR"/compile_commands.json
+fi
 
 # FIXME: Re-enable when coreutils 9.5 gets into debian testing.
 . /usr/lib/os-release
