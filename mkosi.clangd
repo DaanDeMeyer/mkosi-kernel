@@ -42,6 +42,7 @@ exec mkosi \
     --build-script= \
     --build-script="$(realpath "$0")" \
     build \
+    -- \
     "$PROFILE" \
     --enable-config \
     --compile-commands-dir=/work/build/"$PROFILE" \
