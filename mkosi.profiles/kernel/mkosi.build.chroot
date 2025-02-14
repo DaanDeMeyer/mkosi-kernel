@@ -85,7 +85,7 @@ export KBUILD_BUILD_TIMESTAMP="Fri Jun  5 15:58:00 CEST 2015"
 export KBUILD_BUILD_HOST="mkosi"
 export KBUILD_BUILD_USER="mkosi"
 
-make $EXTRA -j "$(nproc)" $( ((INCREMENTAL)) && echo modules)
+make $EXTRA -j "$(nproc)"
 
 if ! ((INCREMENTAL)); then
     echo "Generating compile-commands database"
