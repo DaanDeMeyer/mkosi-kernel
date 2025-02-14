@@ -25,27 +25,7 @@ fi
 
 echo "Using kernel config $CONFIG"
 
-collect_files()
-{
-    local file res=
-
-    for file; do
-        case "$file" in
-        *\~*)
-            continue
-            ;;
-        esac
-        if test -e "$file"; then
-            res="$res$(cat "$file")"
-        fi
-    done
-    echo "$res"
-}
-
 cd kernel/
-
-FILE_LOCALVERSION="$(collect_files localversion*)"
-CONFIG_LOCALVERSION=$(sed -n 's/^CONFIG_LOCALVERSION="?\(.*\)"?$/\1/p' "$SRCDIR/$CONFIG" | cut -d '"' -f2)
 
 # If LOCALVERSION is not set, kbuild will do a very expensive git describe
 # command to determine a git version suffix to append to the kernel version, so
@@ -54,7 +34,7 @@ CONFIG_LOCALVERSION=$(sed -n 's/^CONFIG_LOCALVERSION="?\(.*\)"?$/\1/p' "$SRCDIR/
 LOCALVERSION=${LOCALVERSION:-""}
 export LOCALVERSION
 
-BUILDDIR="$BUILDDIR/kernel/${FILE_LOCALVERSION}${CONFIG_LOCALVERSION}${LOCALVERSION}"
+BUILDDIR="$BUILDDIR/kernel"
 
 echo "Using kernel build directory $BUILDDIR"
 mkdir -p "$BUILDDIR"
