@@ -30,12 +30,8 @@ fi
 PROFILE="$1"
 shift # shift away profile
 
-DISTRIBUTION="$(jq -r .Distribution "$MKOSI_CONFIG")"
-RELEASE="$(jq -r .Release "$MKOSI_CONFIG")"
-ARCH="$(jq -r .Architecture "$MKOSI_CONFIG")"
-
 HOST_BUILDDIR="$(jq -r .BuildDirectory "$MKOSI_CONFIG")"
-HOST_CACHEDIR="$(jq -r .CacheDirectory "$MKOSI_CONFIG")"
+HOST_BUILDSUBDIR="$(jq -r .BuildSubdirectory "$MKOSI_CONFIG")"
 
 BUILD_SOURCE_MAPPINGS="$(jq -r '[
     .BuildSources[]
@@ -47,6 +43,5 @@ exec mkosi-chroot env --chdir="$SRCDIR/$PROFILE" clangd \
     --compile-commands-dir=/work/build/"$PROFILE" \
     --path-mappings="\
 $BUILD_SOURCE_MAPPINGS,\
-$HOST_BUILDDIR=/work/build,\
-$HOST_CACHEDIR/$DISTRIBUTION~$RELEASE~$ARCH.cache/usr/include/=/usr/include" \
+$HOST_BUILDDIR/$HOST_BUILDSUBDIR=/work/build,\
     "$@"
