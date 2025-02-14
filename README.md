@@ -216,6 +216,26 @@ kernel and the latest systemd:
 mkosi -f qemu
 ```
 
+## Language Server Protocol (clangd)
+
+**mkosi-kernel** provides a script that can be used to run clangd on the kernel
+sources to provide code completion and diagnostics to editors that support the
+Language Server Protocol. To make use of this, point your editor's LSP plugin
+to the `mkosi.clangd` script inside this repository and pass the name of the
+profile on which you want to run clangd as the first argument. For example, for
+vscode, the configuration to run clangd on the kernel would look as follows:
+
+```json
+{
+    "clangd.path": "/home/daandemeyer/projects/mkosi-kernel/mkosi.clangd",
+    "clangd.arguments": ["kernel"],
+}
+```
+
+Note that the script requires an up-to-date cache of the mkosi-kernel image build,
+so if it fails to start you likely have to run `mkosi -f` once in the mkosi-kernel
+directory to make sure the caches are up-to-date.
+
 ## Contributing
 
 All package and kconfig lists must be sorted using `sort -u`.
