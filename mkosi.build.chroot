@@ -4,7 +4,7 @@ set -e
 
 TEMP=$( \
     getopt \
-    -o 'c:i' \
+    -o 'c:ik' \
     --long 'incremental' \
     --long 'fstests' \
     --long 'kernel' \
@@ -33,7 +33,7 @@ while true; do
             shift 1
             continue
         ;;
-        '--kernel')
+        '-k'|'--kernel')
             KERNEL=1
             shift 1
             continue
