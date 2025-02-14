@@ -45,7 +45,7 @@ source tree at `mkosi.kernel.config`. If it does not exist and the `$CONFIG`
 environment variable (set using `Environment=`) is not set, the default config
 file shipped with this repository (`mkosi.kernel.config`) is used instead.
 Alternatively, `--config` (or `-c`) can be used to pass the config path to use
-via the command line (e.g. `mkosi -f build -c <path-to-config>`).
+via the command line (e.g. `mkosi -f build -- -c <path-to-config>`).
 
 To build the selftests, set `SELFTESTS=1` using `Environment=`.
 `SELFTESTS_TARGETS=` can be used to only build specific selftests targets.
@@ -101,7 +101,7 @@ on the fly. To use this configuration, the following tools have to be installed:
 To avoid having to rebuild the image for every change made to a profile,
 mkosi-kernel supports incremental builds that allows for rebuilding projects
 and making the changes available in the image without rebuilding the image
-itself. Using this mode requires mkosi version `24~devel` or newer.
+itself. Using this mode requires mkosi version `26~devel` or newer.
 
 To make use of this, we'll need to make sure the source and build directories
 of each profile are mounted into the virtual machine by adding the following to
@@ -119,33 +119,41 @@ kernel modules are automatically bind mounted from `/work/build/kernel/modules`
 to `/usr/lib/modules` if that directory is available.
 
 To rebuild each profile without rebuilding the image, open another terminal on
-the host and run `mkosi -t none build -i`. This will rebuild each enabled
-profile. To select which profiles to rebuild, simply pass the name of the profile
-as an option. For example, run `mkosi -t none build -i --btrfs-progs` to only
-rebuild the btrfs-progs profile. After the command finishes, the changes will be
-available in `/work/build` in the virtual machine.
+the host and run `mkosi -t none build -- -i`. This will rebuild each enabled
+profile. After the command finishes, the changes will be available in `/work/build`
+in the virtual machine. To select which profiles to rebuild, simply pass the name
+of the profile as an option. For example, run `mkosi -t none build -- -i --kernel`
+to only rebuild the kernel profile.
 
-Note that for the kernel profile, only modules are rebuilt, so this approach does
-not work if the corresponding code in the kernel cannot be compiled as a module.
-
-To reload a kernel module after doing a incremental build, run `rmmod <module>`
+To reload a kernel module after doing a incremental kernel build, run `rmmod <module>`
 followed by `modprobe <module>`. Of course you need to make sure the module is
-not currently being used to be able to remove it. For example, if you're
-building a disk image and hacking on a filesystem (e.g. `btrfs`), you have to
-make sure the rootfs is not on `btrfs` to be able to unload the `btrfs` module
-with `rmmod`. You can override the filesystem used by `systemd-repart` when
-mkosi builds a disk image by creating a directory `mkosi.repart` in the
-mkosi-kernel repository and writing a file `00-root.conf` in there with the
-following contents:
+not currently being used to be able to remove it. When using the disk image
+output, the filesystem used can be overridden by adding the following to
+`mkosi.local.conf`:
 
 ```ini
-[Partition]
-Type=root
-Format=<filesystem>
-CopyFiles=/
-SizeMinBytes=8G
-SizeMaxBytes=8G
+[Build]
+Environment=SYSTEMD_REPART_OVERRIDE_FSTYPE_ROOT=ext4
 ```
+
+To summarize, with incremental mode, the following workflow becomes possible
+to hack on the kernel:
+
+```sh
+mkosi -f qemu                 # Build image and boot into a virtual machine
+                              # Switch to another terminal on the host
+mkosi -t none -- -i -k        # Rebuild the kernel without rebuilding the image
+                              # Switch back to the virtual machine
+rmmod btrfs && modprobe btrfs # Reload the btrfs module
+...
+systemctl poweroff            # Shutdown the virtual machine
+mkosi -t none -- -i -k        # Rebuild the kernel without rebuilding the image
+mkosi qemu                    # Boot virtual machine again with new kernel
+```
+
+Note that this workflow depends on a stable kernel version. If the kernel version
+changes, you will have to rebuild the full image once with `mkosi -f` before
+continuing to use this workflow.
 
 ## Kernel debugging with gdb
 
