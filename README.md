@@ -119,10 +119,10 @@ kernel modules are automatically bind mounted from `/work/build/kernel/modules`
 to `/usr/lib/modules` if that directory is available.
 
 To rebuild each profile without rebuilding the image, open another terminal on
-the host and run `mkosi -t none build -- -i`. This will rebuild each enabled
+the host and run `mkosi -R build -- -i`. This will rebuild each enabled
 profile. After the command finishes, the changes will be available in `/work/build`
 in the virtual machine. To select which profiles to rebuild, simply pass the name
-of the profile as an option. For example, run `mkosi -t none build -- -i --kernel`
+of the profile as an option. For example, run `mkosi -R build -- -i --kernel`
 to only rebuild the kernel profile.
 
 To reload a kernel module after doing a incremental kernel build, run `rmmod <module>`
@@ -142,12 +142,12 @@ to hack on the kernel:
 ```sh
 mkosi -f qemu                 # Build image and boot into a virtual machine
                               # Switch to another terminal on the host
-mkosi -t none -- -i -k        # Rebuild the kernel without rebuilding the image
+mkosi -R -- -i -k             # Rebuild the kernel without rebuilding the image
                               # Switch back to the virtual machine
 rmmod btrfs && modprobe btrfs # Reload the btrfs module
 ...
 systemctl poweroff            # Shutdown the virtual machine
-mkosi -t none -- -i -k        # Rebuild the kernel without rebuilding the image
+mkosi -R -- -i -k             # Rebuild the kernel without rebuilding the image
 mkosi qemu                    # Boot virtual machine again with new kernel
 ```
 
