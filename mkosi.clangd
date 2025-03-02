@@ -34,7 +34,9 @@ HOST_BUILDDIR="$(jq -r .BuildDirectory "$MKOSI_CONFIG")"
 HOST_BUILDSUBDIR="$(jq -r .BuildSubdirectory "$MKOSI_CONFIG")"
 
 BUILD_SOURCE_MAPPINGS="$(jq -r '[
-    .BuildSources[]
+    .BuildSources
+    | sort_by(.Target)
+    | reverse.[]
     | .Source + "/=/work/src/" + .Target
 ] | join(",")' "$MKOSI_CONFIG")"
 
