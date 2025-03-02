@@ -142,12 +142,12 @@ to hack on the kernel:
 ```sh
 mkosi -f qemu                 # Build image and boot into a virtual machine
                               # Switch to another terminal on the host
-mkosi -R -- -i -k             # Rebuild the kernel without rebuilding the image
+mkosi -R build -- -i -k       # Rebuild the kernel without rebuilding the image
                               # Switch back to the virtual machine
 rmmod btrfs && modprobe btrfs # Reload the btrfs module
 ...
 systemctl poweroff            # Shutdown the virtual machine
-mkosi -R -- -i -k             # Rebuild the kernel without rebuilding the image
+mkosi -R build -- -i -k       # Rebuild the kernel without rebuilding the image
 mkosi qemu                    # Boot virtual machine again with new kernel
 ```
 
