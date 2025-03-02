@@ -70,11 +70,7 @@ make $EXTRA -j "$(nproc)"
 if ! ((INCREMENTAL)); then
     echo "Generating compile-commands database"
     scripts/clang-tools/gen_compile_commands.py -d "$BUILDDIR" -o "$BUILDDIR"/compile_commands.json
-fi
 
-# FIXME: Re-enable when coreutils 9.5 gets into debian testing.
-. /usr/lib/os-release
-if ! ((INCREMENTAL)) && [ ! "$ID" = "debian" ]; then
     make $EXTRA INSTALL_HDR_PATH="$DESTDIR/usr" headers_install
 fi
 
