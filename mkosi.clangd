@@ -43,5 +43,5 @@ exec mkosi-chroot env --chdir="$SRCDIR/$PROFILE" clangd \
     --compile-commands-dir=/work/build/"$PROFILE" \
     --path-mappings="\
 $BUILD_SOURCE_MAPPINGS,\
-$HOST_BUILDDIR/$HOST_BUILDSUBDIR=/work/build,\
+$HOST_BUILDDIR/$HOST_BUILDSUBDIR=/work/build" \
     "$@"
