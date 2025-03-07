@@ -17,11 +17,9 @@ if [[ -z "${MKOSI_CONFIG-}" ]]; then
     # shellcheck disable=SC2093 # exec not last command
     exec mkosi \
         --directory "$DIRECTORY" \
-        --incremental=strict \
-        --build-sources-ephemeral=no \
-        --format=none \
         --build-script= \
         --build-script="$(realpath "$0")" \
+        --rerun-build-scripts \
         build \
         -- \
         "$@"
