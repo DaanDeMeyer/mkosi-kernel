@@ -29,4 +29,9 @@ mkdir -p /work/dest/var/lib/xfstests /var/lib/xfstests
 mount --bind /work/dest/var/lib/xfstests /var/lib/xfstests
 DESTDIR= make install
 
+mkdir -p "$DESTDIR/mnt/test"
+mkdir -p "$DESTDIR/mnt/scratch"
+mkdir -p "$DESTDIR/mnt/src/test"
+mkdir -p "$DESTDIR/mnt/src/scratch"
+
 exit 0
