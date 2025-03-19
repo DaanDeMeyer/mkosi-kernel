@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 set -e
 
-if [ ! -f bpftrace/CMakeLists.txt ]; then
+if [[ ! -f bpftrace/CMakeLists.txt ]]; then
     exit 0
 fi
 

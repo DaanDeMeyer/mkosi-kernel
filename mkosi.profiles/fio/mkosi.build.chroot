@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 set -e
 
-if [ ! -f fio/Makefile ]; then
+if [[ ! -f fio/Makefile ]]; then
     exit 0
 fi
 

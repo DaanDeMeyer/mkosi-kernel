@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 set -e
 
-if [ ! -f fstests/Makefile ]; then
+if [[ ! -f fstests/Makefile ]]; then
     exit 0
 fi
 

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 set -e
 
-if [ ! -f btrfs-progs/autogen.sh ]; then
+if [[ ! -f btrfs-progs/autogen.sh ]]; then
     exit 0
 fi
 
@@ -20,11 +20,11 @@ mount \
     -o "lowerdir=$SRCDIR/btrfs-progs,upperdir=$BUILDDIR/btrfs-progs,workdir=$BUILDDIR/workdir/btrfs-progs,userxattr"
 cd "$SRCDIR/btrfs-progs"
 
-if [ ! -f ./configure ]; then
+if [[ ! -f ./configure ]]; then
     ./autogen.sh
 fi
 
-if [ ! -f ./Makefile.inc ]; then
+if [[ ! -f ./Makefile.inc ]]; then
     ./configure \
             --disable-documentation \
             --enable-experimental \

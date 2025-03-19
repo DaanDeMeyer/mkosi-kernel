@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 set -e
 
-if [ ! -f kernel/Makefile ]; then
+if [[ ! -f kernel/Makefile ]]; then
     exit 0
 fi
 
@@ -10,15 +10,15 @@ fi
 
 ((INCREMENTAL)) && ! ((KERNEL)) && exit 0
 
-if [ -z "$CONFIG" ]; then
-    if [ -f kernel/mkosi.kernel.config ]; then
+if [[ -z "$CONFIG" ]]; then
+    if [[ -f kernel/mkosi.kernel.config ]]; then
         CONFIG=kernel/mkosi.kernel.config
     else
         CONFIG=mkosi.kernel.config
     fi
 fi
 
-if [ ! -f "$SRCDIR/$CONFIG" ]; then
+if [[ ! -f "$SRCDIR/$CONFIG" ]]; then
     echo "Kernel config not found at $CONFIG" >&2
     exit 1
 fi
@@ -40,7 +40,7 @@ echo "Using kernel build directory $BUILDDIR"
 mkdir -p "$BUILDDIR"
 
 # Prevent a distro's custom installkernel script from being used.
-if [ -x /sbin/installkernel ]; then
+if [[ -x /sbin/installkernel ]]; then
     mount --bind /dev/null /sbin/installkernel
 fi
 
@@ -51,10 +51,10 @@ if ((LLVM)); then
 fi
 
 if ! ((INCREMENTAL)); then
-    if [ ! -f "$BUILDDIR/.config" ] || \
-        [ ! -e "$BUILDDIR/mkosi.kernel.config.previous" ] || \
+    if [[ ! -f "$BUILDDIR/.config" ]] || \
+        [[ ! -e "$BUILDDIR/mkosi.kernel.config.previous" ]] || \
         ! cmp --silent "$SRCDIR/$CONFIG" "$BUILDDIR/mkosi.kernel.config.previous" || \
-        [ -n "$(make -s O=$BUILDDIR listnewconfig)" ]; then
+        [[ -n "$(make -s O=$BUILDDIR listnewconfig)" ]]; then
             cp "$SRCDIR/$CONFIG" "$BUILDDIR/mkosi.kernel.config.previous"
             make KCONFIG_ALLCONFIG="$SRCDIR/$CONFIG" O=$BUILDDIR alldefconfig
     fi
@@ -74,7 +74,7 @@ if ! ((INCREMENTAL)); then
     make $EXTRA INSTALL_HDR_PATH="$DESTDIR/usr" headers_install
 fi
 
-if [ "$ARCHITECTURE" = "arm64" ]; then
+if [[ "$ARCHITECTURE" == "arm64" ]]; then
     INSTALL="zinstall"
 else
     INSTALL="install"
@@ -115,13 +115,13 @@ if ! ((INCREMENTAL)); then
 fi
 
 if ((SELFTESTS)); then
-    if [ -n "$SELFTESTS_TARGETS" ]; then
+    if [[ -n "$SELFTESTS_TARGETS" ]]; then
         SELFTESTS_TARGETS="TARGETS=$SELFTESTS_TARGETS"
     else
         SELFTESTS_TARGETS=""
     fi
 
-    if [ -n "$SELFTESTS_SKIP_TARGETS" ]; then
+    if [[ -n "$SELFTESTS_SKIP_TARGETS" ]]; then
         SELFTESTS_SKIP_TARGETS="SKIP_TARGETS=$SELFTESTS_SKIP_TARGETS"
     else
         SELFTESTS_SKIP_TARGETS=""
