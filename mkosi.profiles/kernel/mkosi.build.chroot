@@ -6,6 +6,7 @@ if [[ ! -f kernel/Makefile ]]; then
     exit 0
 fi
 
+# shellcheck source=/dev/null
 . "$ARTIFACTDIR"/env
 
 ((INCREMENTAL)) && ! ((KERNEL)) && exit 0

@@ -6,6 +6,7 @@ if [[ ! -f fio/Makefile ]]; then
     exit 0
 fi
 
+# shellcheck source=/dev/null
 . "$ARTIFACTDIR"/env
 
 ((INCREMENTAL)) && ! ((FIO)) && exit 0

@@ -6,6 +6,7 @@ if [[ ! -f btrfs-progs/autogen.sh ]]; then
     exit 0
 fi
 
+# shellcheck source=/dev/null
 . "$ARTIFACTDIR"/env
 
 ((INCREMENTAL)) && ! ((BTRFS_PROGS)) && exit 0

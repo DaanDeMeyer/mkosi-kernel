@@ -6,6 +6,7 @@ if [[ ! -f bpftrace/CMakeLists.txt ]]; then
     exit 0
 fi
 
+# shellcheck source=/dev/null
 . "$ARTIFACTDIR"/env
 
 ((INCREMENTAL)) && ! ((BPFTRACE)) && exit 0

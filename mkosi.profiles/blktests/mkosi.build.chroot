@@ -6,6 +6,7 @@ if [[ ! -f blktests/Makefile ]]; then
     exit 0
 fi
 
+# shellcheck source=/dev/null
 . "$ARTIFACTDIR"/env
 
 ((INCREMENTAL)) && ! ((BLKTESTS)) && exit 0
