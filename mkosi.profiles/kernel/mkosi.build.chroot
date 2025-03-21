@@ -112,7 +112,6 @@ if ! ((INCREMENTAL)); then
         --reflink=auto
     make $EXTRA INSTALL_PATH="$DESTDIR/usr/lib/modules/$KERNEL_RELEASE" "$INSTALL"
     OUTPUT="$(jq --raw-output .Output <"$MKOSI_CONFIG")"
-    cp "$BUILDDIR"/vmlinux "$OUTPUTDIR/$OUTPUT.vmlinux"
 fi
 
 if ((SELFTESTS)); then
