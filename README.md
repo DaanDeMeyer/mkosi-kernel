@@ -172,7 +172,7 @@ where all the files are, in order for things to work properly.
 
 ```
 $ gdb
-(gdb) file ~/source/mkosi-kernel/mkosi.builddir/<distro-release-arch>/kernel/<localversion>/image.vmlinux
+(gdb) file ~/source/mkosi-kernel/mkosi.builddir/<distro>~<release>~<arch>/kernel/vmlinux
 (gdb) set substitute-path /work/src/kernel ~/source/linux
 (gdb) target remote localhost:1234
 ```
