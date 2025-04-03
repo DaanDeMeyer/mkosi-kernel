@@ -193,15 +193,15 @@ as needed.
 ## Building with latest kernel and latest systemd
 
 To build mkosi-kernel with the latest systemd straight from git, first
-we need to build systemd rpms from the source repository:
+we need to build systemd packages from the source repository:
 
 ```sh
 git clone https://github.com/systemd/systemd
 mkosi -t none -f
-ls mkosi.builddir/<distribution>~<release>~<arch>
+ls build/mkosi.builddir/<distribution>~<release>~<arch>
 ```
 
-Then we have to configure mkosi-kernel to pick up the rpms we just built
+Then we have to configure mkosi-kernel to pick up the packages we just built
 (make sure the mkosi distribution and release for mkosi-kernel are the same as
 the mkosi distribution and release in the systemd repository):
 
