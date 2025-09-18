@@ -1,0 +1,7 @@
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c '/usr/sbin/cxl_probe.sh'
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
