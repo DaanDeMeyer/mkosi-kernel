@@ -1,0 +1,7 @@
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'sleep 5; /usr/lib/tmpfiles.d/cxl.sh;'
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
