@@ -1,0 +1,30 @@
+#  SPDX-License-Identifier: LGPL-2.1-or-later
+
+ACTION!="add", GOTO="cxl_end"
+SUBSYSTEM!="cxl", GOTO="cxl_end"
+
+KERNEL=="decoder2.0", \
+  ATTR{mode}="ram", \
+  ATTR{dpa_size}="0x40000000"
+
+KERNEL=="decoder0.0", \
+  ATTR{create_ram_region}="region0"
+
+# We can't set up region0 until decoder2.0 is available so we skip region0
+# setup if decoder2.0 isn't available and retrigger region0 when processing
+# decoder2.0 if it already exists.
+
+KERNEL=="decoder2.0", \
+TEST=="%S/bus/cxl/devices/region0", \
+  RUN+="/usr/bin/udevadm trigger --action=add %S/bus/cxl/devices/region0"
+
+KERNEL=="region0", \
+TEST=="%S/bus/cxl/devices/decoder2.0", \
+  ATTR{interleave_granularity}="256", \
+  ATTR{interleave_ways}="1", \
+  ATTR{size}="0x40000000", \
+  ATTR{target0}="decoder2.0", \
+  ATTR{commit}="1", \
+  ATTR{subsystem/drivers/cxl_region/bind}="region0"
+
+LABEL="cxl_end"
